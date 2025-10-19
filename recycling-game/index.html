@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Recycling Game</title>
+    <meta name="description" content="A simple recycling game in A-Frame." />
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="js/spawn-recyclables.js"></script>
+    <script src="js/grabbable.js"></script>
+    <script src="js/recycling-bin.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <img
+          id="plastic-texture"
+          src="./textures/plastic.jpg"
+        />
+        <img
+          id="paper-texture"
+          src="./textures/paper.jpg"
+        />
+        <img
+          id="glass-texture"
+          src="./textures/glass.jpg"
+        />
+      </a-assets>
+
+      <!-- Player -->
+      <a-entity id="player">
+        <a-camera position="0 1.6 0"></a-camera>
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+        ></a-entity>
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; handModelStyle: lowPoly; color: #cceeff"
+        ></a-entity>
+      </a-entity>
+
+      <!-- Recycling Bins -->
+      <a-box
+        position="-2 0.5 -3"
+        depth="1"
+        height="1"
+        width="1"
+        color="#808080"
+        recycling-bin="type: plastic"
+      >
+        <a-text
+          value="Plastic"
+          align="center"
+          position="0 0.7 0.5"
+          color="#FFFFFF"
+        ></a-text>
+      </a-box>
+      <a-box
+        position="0 0.5 -3"
+        depth="1"
+        height="1"
+        width="1"
+        color="#808080"
+        recycling-bin="type: paper"
+      >
+        <a-text
+          value="Paper"
+          align="center"
+          position="0 0.7 0.5"
+          color="#FFFFFF"
+        ></a-text>
+      </a-box>
+      <a-box
+        position="2 0.5 -3"
+        depth="1"
+        height="1"
+        width="1"
+        color="#808080"
+        recycling-bin="type: glass"
+      >
+        <a-text
+          value="Glass"
+          align="center"
+          position="0 0.7 0.5"
+          color="#FFFFFF"
+        ></a-text>
+      </a-box>
+
+      <!-- Recyclable Objects -->
+      <a-entity spawn-recyclables></a-entity>
+
+      <!-- Ground -->
+      <a-plane
+        position="0 0 -4"
+        rotation="-90 0 0"
+        width="10"
+        height="10"
+        color="#7BC8A4"
+      ></a-plane>
+      <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+  </body>
+</html>
