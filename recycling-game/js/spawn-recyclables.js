@@ -9,16 +9,17 @@ AFRAME.registerComponent("spawn-recyclables", {
     materials.forEach((material) => {
       for (let i = 0; i < material.count; i++) {
         const block = document.createElement("a-box");
-        block.setAttribute("class", "recyclable");
+        block.setAttribute("class", "recyclable grabbable");
         block.setAttribute("data-type", material.type);
         block.setAttribute("src", material.texture);
         block.setAttribute("width", 0.2);
         block.setAttribute("height", 0.2);
         block.setAttribute("depth", 0.2);
         block.setAttribute("grabbable", "");
+        block.setAttribute("dynamic-body", { mass: 0.2 });
         block.setAttribute("position", {
-          x: (Math.random() - 0.5) * 4,
-          y: 0.2,
+          x: (Math.random() - 0.5) * 10,
+          y: 1.3,
           z: (Math.random() - 0.5) * 2 - 1,
         });
         this.el.sceneEl.appendChild(block);

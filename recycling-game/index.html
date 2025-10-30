@@ -5,37 +5,35 @@
     <title>Recycling Game</title>
     <meta name="description" content="A simple recycling game in A-Frame." />
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
     <script src="js/spawn-recyclables.js"></script>
     <script src="js/grabbable.js"></script>
     <script src="js/recycling-bin.js"></script>
   </head>
   <body>
-    <a-scene>
+    <a-scene physics="gravity: 0 -9.8 0; debug: true">
       <a-assets>
-        <img
-          id="plastic-texture"
-          src="./textures/plastic.jpg"
-        />
-        <img
-          id="paper-texture"
-          src="./textures/paper.jpg"
-        />
-        <img
-          id="glass-texture"
-          src="./textures/glass.jpg"
-        />
+        <img id="plastic-texture" src="./textures/plastic.jpg" />
+        <img id="paper-texture" src="./textures/paper.jpg" />
+        <img id="glass-texture" src="./textures/glass.jpg" />
       </a-assets>
 
       <!-- Player -->
-      <a-entity id="player">
-        <a-camera position="0 1.6 0"></a-camera>
+      <a-entity id="player" movement-controls="fly: false; speed: 0.07">
+        <a-camera position="0 1.6 0"> </a-camera>
         <a-entity
           id="left-hand"
-          hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+          hand-controls="hand: left; modelStyle: highPoly"
+          raycaster="objects: .grabbable"
+          cursor
         ></a-entity>
         <a-entity
           id="right-hand"
-          hand-controls="hand: right; handModelStyle: lowPoly; color: #cceeff"
+          hand-controls="hand: right; modelStyle: highPoly"
+          raycaster="objects: .grabbable"
+          cursor
         ></a-entity>
       </a-entity>
 
@@ -45,8 +43,9 @@
         depth="1"
         height="1"
         width="1"
-        color="#808080"
+        color="#FFFF00"
         recycling-bin="type: plastic"
+        static-body
       >
         <a-text
           value="Plastic"
@@ -60,8 +59,9 @@
         depth="1"
         height="1"
         width="1"
-        color="#808080"
+        color="#0000FF"
         recycling-bin="type: paper"
+        static-body
       >
         <a-text
           value="Paper"
@@ -75,8 +75,9 @@
         depth="1"
         height="1"
         width="1"
-        color="#808080"
+        color="#00FF00"
         recycling-bin="type: glass"
+        static-body
       >
         <a-text
           value="Glass"
@@ -96,6 +97,7 @@
         width="10"
         height="10"
         color="#7BC8A4"
+        static-body
       ></a-plane>
       <a-sky color="#ECECEC"></a-sky>
     </a-scene>
