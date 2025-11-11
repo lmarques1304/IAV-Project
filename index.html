@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Recycle Islands VR</title>
+    <meta name="description" content="Recycle Islands VR - Main Menu">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+
+  <body>
+    <a-scene background="color: #b3e5fc">
+
+      <a-entity light="type: ambient; intensity: 1"></a-entity>
+      <a-entity light="type: directional; intensity: 0.7" position="1 2 1"></a-entity>
+
+      <a-sky color="#87CEEB" rotation="0 45 0" animation="property: rotation; to: 0 405 0; loop: true; dur: 30000"></a-sky>
+
+      <a-entity position="0 2.2 -3">
+        <a-text 
+          value="Recycle Islands VR" 
+          color="#084c61" 
+          align="center"
+          width="6">
+        </a-text>
+      </a-entity>
+
+      <a-entity position="0 1.8 -3">
+        <a-text 
+          value="...colocar subtitulo..." 
+          color="#20603d" 
+          align="center"
+          width="4">
+        </a-text>
+      </a-entity>
+
+      <a-box 
+        id="startButton"
+        position="0 0.8 -3" 
+        depth="0.3" 
+        height="0.5" 
+        width="2.5" 
+        color="#28a745"
+        class="menu-button clickable">
+      </a-box>
+      <a-text 
+        value="Start New Game" 
+        position="-0.5 0.82 -2.7" 
+        color="white" 
+        width="3">
+      </a-text>
+
+      <a-box 
+        id="continueButton"
+        position="0 0 -3" 
+        depth="0.3" 
+        height="0.5" 
+        width="2.5" 
+        color="#218838"
+        class="menu-button clickable">
+      </a-box>
+      <a-text 
+        value="Continue Game" 
+        position="-0.5 0.02 -2.7" 
+        color="white" 
+        width="3">
+      </a-text>
+
+      <a-box 
+        id="settingsButton"
+        position="0 -0.8 -3" 
+        depth="0.3" 
+        height="0.5" 
+        width="2.5" 
+        color="#1e7e34"
+        class="menu-button clickable">
+      </a-box>
+      <a-text 
+        value="Settings" 
+        position="-0.3 -0.78 -2.7" 
+        color="white" 
+        width="3">
+      </a-text>
+
+      <a-entity camera look-controls position="0 1.6 0">
+        <a-cursor 
+          color="yellow" 
+          fuse="true" 
+          fuse-timeout="800"
+          material="shader: flat; opacity: 0.9">
+        </a-cursor>
+      </a-entity>
+
+    </a-scene>
+
+    <script>
+      const buttons = document.querySelectorAll('.menu-button');
+      buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => btn.setAttribute('color', '#34d058'));
+        btn.addEventListener('mouseleave', () => {
+          if (btn.id === 'startButton') btn.setAttribute('color', '#28a745');
+          if (btn.id === 'continueButton') btn.setAttribute('color', '#218838');
+          if (btn.id === 'settingsButton') btn.setAttribute('color', '#1e7e34');
+        });
+      });
+
+      document.getElementById('startButton').addEventListener('click', () => {
+        window.location.href = 'islands/plastic.html';
+      });
+
+      document.getElementById('continueButton').addEventListener('click', () => {
+        alert('Continue Game - Coming Soon!');
+      });
+
+      document.getElementById('settingsButton').addEventListener('click', () => {
+        alert('Settings - Coming Soon!');
+      });
+    </script>
+  </body>
+</html>
