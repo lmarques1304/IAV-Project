@@ -19,9 +19,22 @@
 
       <a-entity id="rig">
         <a-entity id="camera" camera look-controls></a-entity>
-        <a-entity id="leftHand" oculus-touch-controls="hand: left"></a-entity>
+
+        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
         <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+
+        <a-entity id="leftLaser" 
+                  laser-controls="hand: left"
+                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        </a-entity>
+
+        <a-entity id="rightLaser" 
+                  laser-controls="hand: right"
+                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        </a-entity>
+
       </a-entity>
+
 
       <a-plane class="ground"
                rotation="-90 0 0"
