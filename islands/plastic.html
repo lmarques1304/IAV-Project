@@ -7,7 +7,6 @@
     <script src="../js/blink-controls.js"></script>
     <script src="../js/island-controls.js"></script>
     <script src="../js/island.js"></script>
-
   </head>
 
   <body>
@@ -16,7 +15,6 @@
       <a-sky></a-sky>
 
       <a-entity id="defaultLight"></a-entity>
-
       <a-entity id="sunLight" position="1 1 0"></a-entity>
 
       <a-entity id="rig">
@@ -25,7 +23,12 @@
         <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
       </a-entity>
 
-      <a-plane class="ground" rotation="-90 0 0"></a-plane>
+      <a-plane class="ground"
+               rotation="-90 0 0"
+               width="20"
+               height="20"
+               color="#f1d28a">
+      </a-plane>
 
     </a-scene>
   </body>
