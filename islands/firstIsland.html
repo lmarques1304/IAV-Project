@@ -168,6 +168,7 @@
       <!-- TEST -->
       <a-box
         id="test-box"
+        class="custom-grabbable"
         width="0.1"
         height="0.1"
         depth="0.1"
@@ -185,7 +186,7 @@
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .grabbable"
+          raycaster="objects: .custom-grabbable"
           cursor
         ></a-entity>
         <a-entity
