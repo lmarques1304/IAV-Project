@@ -142,6 +142,12 @@
 
   <body>
     <a-scene physics="gravity: -9.8">
+      <a-assets>
+        <a-asset-item
+          id="plasic-bottle"
+          src="../models/plastic-bottle.glb"
+        ></a-asset-item>
+      </a-assets>
       <!-- 🌤️ Céu -->
       <a-sky src="island1sky.jpg" rotation="0 -90 0"></a-sky>
 
@@ -166,16 +172,14 @@
       </a-entity>
 
       <!-- TEST -->
-      <a-box
-        id="test-box"
+      <a-entity
+        gltf-model="#plasic-bottle"
         class="custom-grabbable"
-        width="0.1"
-        height="0.1"
-        depth="0.1"
-        position="0 182 4"
+        scale="1 1 1"
+        position="-16 182 -33"
         material="side: double; color: blue;"
         custom-grabbable
-      ></a-box>
+      ></a-entity>
 
       <!-- 🎮 Jogador -->
       <a-entity id="player" movement-controls="fly: false; speed: 1">
