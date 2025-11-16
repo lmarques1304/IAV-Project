@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Recycle Islands VR - Plastic Island</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="../js/blink-controls.js"></script>
     <script src="../js/island-controls.js"></script>
     <script src="../js/island.js"></script>
   </head>
@@ -11,22 +12,164 @@
   <body>
     <a-scene>
 
+      <a-assets>
+        <a-asset-item id="treeModel" src="/assets/textures/Trees/Tree.glb"></a-asset-item>
+        <a-asset-item id="plasticItem1" src="/assets/plastic-trash/Bottle.glb"></a-asset-item>
+        <a-asset-item id="plasticItem2" src="/assets/plastic-trash/Soda.glb"></a-asset-item>
+        <a-asset-item id="plasticItem3" src="/assets/plastic-trash/bag.glb"></a-asset-item>
+      </a-assets>
+
       <a-sky></a-sky>
 
       <a-entity id="defaultLight"></a-entity>
       <a-entity id="sunLight" position="1 1 0"></a-entity>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 0.07" position="0 1.6 0">
-        <a-camera id="camera" camera look-controls position="0 0 0"></a-camera>
+      <a-entity id="rig" movement-controls="fly: false; speed: 100" wasd-controls="acceleration: 20">
+        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+
+        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
+        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+
+        <a-entity id="leftLaser" 
+                  laser-controls="hand: left"
+                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        </a-entity>
+
+        <a-entity id="rightLaser" 
+                  laser-controls="hand: right"
+                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        </a-entity>
       </a-entity>
 
-      <a-plane class="ground"
-               rotation="-90 0 0"
-               width="20"
-               height="20"
-               color="#f1d28a">
+      <a-plane 
+        class="ground"
+        position="0 0 0"
+        width="180"
+        height="30"
+        rotation="-90 0 0"
+        src="/assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        repeat="60 10">
       </a-plane>
 
+      <a-plane 
+        position="0 0 515"
+        width="180"
+        height="1000"
+        rotation="-90 0 0"
+        src="/assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
+        repeat="100 1000">
+      </a-plane>
+
+      <a-plane 
+        position="0 0 -65"
+        width="180"
+        height="100"
+        rotation="-90 0 0"
+        src="/assets/textures/Ground/Grass005_1K-JPG/Grass005_1K-JPG_Color.jpg"
+        repeat="90 50">
+      </a-plane>
+
+
+      <a-entity id="welcomeText" position="0 3.5 -3">
+        <a-text value="'Build your boat'" color="#000000" align="center" width="4"
+                font="https://cdn.aframe.io/fonts/mozillavr.fnt">
+        </a-text>
+      </a-entity>
+
+      <script>
+        const planeWidth = 180;
+        const planeHeight = 100;
+        const planeOffsetZ = -65;
+
+        for (let i = 0; i < 50; i++) {
+          const tree = document.createElement('a-entity');
+          tree.setAttribute('gltf-model', '#treeModel');
+          tree.setAttribute('scale', '2 2 2');
+          const x = Math.random() * planeWidth - planeWidth / 2;
+          const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+          tree.setAttribute('position', `${x} 2 ${z}`);
+          tree.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+          document.querySelector('a-scene').appendChild(tree);
+        }
+
+        for (let i = 0; i < 50; i++) {
+          const tree = document.createElement('a-entity');
+          tree.setAttribute('gltf-model', '#treeModel');
+          tree.setAttribute('scale', '2.5 2.5 2.5');
+          const x = Math.random() * planeWidth - planeWidth / 2;
+          const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+          tree.setAttribute('position', `${x} 2.5 ${z}`);
+          tree.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+          document.querySelector('a-scene').appendChild(tree);
+        }
+
+        for (let i = 0; i < 50; i++) {
+          const tree = document.createElement('a-entity');
+          tree.setAttribute('gltf-model', '#treeModel');
+          tree.setAttribute('scale', '3.5 3.5 3.5');
+          const x = Math.random() * planeWidth - planeWidth / 2;
+          const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+          tree.setAttribute('position', `${x} 3.5 ${z}`);
+          tree.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+          document.querySelector('a-scene').appendChild(tree);
+        }
+
+        for (let i = 0; i < 50; i++) {
+          const tree = document.createElement('a-entity');
+          tree.setAttribute('gltf-model', '#treeModel');
+          tree.setAttribute('scale', '4 4 4');
+          const x = Math.random() * planeWidth - planeWidth / 2;
+          const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+          tree.setAttribute('position', `${x} 4 ${z}`);
+          tree.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+          document.querySelector('a-scene').appendChild(tree);
+        }
+      </script>
+
+      <script>
+        const sandWidth = 180
+        const sandHeight = 130;
+        const sandOffsetZ = -50;
+
+        const numPlastic1 = 55;
+        const numPlastic2 = 100;
+        const numPlastic3 = 10;
+
+        for (let i = 0; i < numPlastic1; i++) {
+          const plastic = document.createElement('a-entity');
+          plastic.setAttribute('gltf-model', '#plasticItem1');
+          plastic.setAttribute('position', `${Math.random() * sandWidth - sandWidth/2} 0.1 ${Math.random() * sandHeight - sandHeight/2 + sandOffsetZ}`);
+          plastic.setAttribute('scale', '0.1 0.1 0.1');
+          plastic.setAttribute('rotation', `90 0 ${Math.random() * 360}`);
+          document.querySelector('a-scene').appendChild(plastic);
+        }
+
+        for (let i = 0; i < numPlastic2; i++) {
+          const plastic = document.createElement('a-entity');
+          plastic.setAttribute('gltf-model', '#plasticItem2');
+          plastic.setAttribute('position', `${Math.random() * sandWidth - sandWidth/2} 0.1 ${Math.random() * sandHeight - sandHeight/2 + sandOffsetZ}`);
+          plastic.setAttribute('scale', '2 2 2');
+          plastic.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+          document.querySelector('a-scene').appendChild(plastic);
+        }
+
+        for (let i = 0; i < numPlastic3; i++) {
+          const plastic = document.createElement('a-entity');
+          plastic.setAttribute('gltf-model', '#plasticItem3');
+          plastic.setAttribute('position', `${Math.random() * sandWidth - sandWidth/2} 0.3 ${Math.random() * sandHeight - sandHeight/2 + sandOffsetZ}`);
+          plastic.setAttribute('scale', '3 3 3');
+          plastic.setAttribute('rotation', `0 0 0`);
+          document.querySelector('a-scene').appendChild(plastic);
+        }
+      </script>
+
+      <script>
+        setTimeout(() => {
+          const text = document.querySelector('#welcomeText');
+          if (text) text.setAttribute('visible', false);
+        }, 10000);
+      </script>
+      
     </a-scene>
   </body>
 </html>
