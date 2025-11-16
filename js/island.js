@@ -23,13 +23,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const ground = document.querySelector(".ground");
-  if (ground) {
-    ground.setAttribute("width", 30);
-    ground.setAttribute("height", 30);
-    ground.setAttribute("color", "#f1d28a");
-  }
-
   const rig = document.querySelector("#rig");
   if (rig) {
     rig.setAttribute("position", { x: 0, y: 1.6, z: 0 });
