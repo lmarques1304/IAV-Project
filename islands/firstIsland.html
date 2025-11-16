@@ -168,12 +168,13 @@
       <!-- TEST -->
       <a-box
         id="test-box"
-        width="1"
-        height="1"
-        depth="1"
-        position="0 180 0"
+        class="custom-grabbable"
+        width="0.1"
+        height="0.1"
+        depth="0.1"
+        position="0 182 4"
         material="side: double; color: blue;"
-        custon-grabbable
+        custom-grabbable
       ></a-box>
 
       <!-- 🎮 Jogador -->
@@ -185,7 +186,7 @@
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .grabbable"
+          raycaster="objects: .custom-grabbable"
           cursor
         ></a-entity>
         <a-entity
