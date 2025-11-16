@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Floating Island VR - Física com Barreira</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
+    <script src="../js/custom-grabbable.js"></script>
+
+    <script>
+      // 🌊 Componente para flutuar a ilha suavemente
+      AFRAME.registerComponent("floating", {
+        schema: {
+          amplitude: { type: "number", default: 0.2 },
+          speed: { type: "number", default: 1.5 },
+        },
+        init: function () {
+          this.startY = this.el.object3D.position.y;
+          this.time = 0;
+        },
+        tick: function (t, dt) {
+          this.time += dt / 1000;
+          const yOffset =
+            Math.sin(this.time * this.data.speed) * this.data.amplitude;
+          this.el.object3D.position.y = this.startY + yOffset;
+        },
+      });
+
+      // 🧱 Componente para criar paredes invisíveis ao redor da ilha
+      AFRAME.registerComponent("create-island-walls", {
+        schema: {
+          padding: { type: "number", default: 0.2 },
+          wallHeight: { type: "number", default: 3 },
+          wallThickness: { type: "number", default: 0.2 },
+          playerYOffset: { type: "number", default: 0.2 },
+        },
+        init: function () {
+          const island = this.el;
+          const sceneEl = document.querySelector("a-scene");
+          island.addEventListener("model-loaded", () => {
+            const box = new THREE.Box3().setFromObject(island.object3D);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            const pad = this.data.padding;
+            const wallHeight = this.data.wallHeight;
+            const thickness = this.data.wallThickness;
+
+            const width = size.x + pad * 2;
+            const depth = size.z + pad * 2;
+
+            const minX = box.min.x - pad;
+            const maxX = box.max.x + pad;
+            const minZ = box.min.z - pad;
+            const maxZ = box.max.z + pad;
+            const topY = box.max.y;
+
+            function makeWall(attrs) {
+              const wall = document.createElement("a-box");
+              Object.keys(attrs).forEach((k) => wall.setAttribute(k, attrs[k]));
+              wall.setAttribute(
+                "material",
+                "color: #000000; opacity: 0; transparent: true;"
+              );
+              wall.setAttribute("static-body", "shape: box");
+              sceneEl.appendChild(wall);
+              return wall;
+            }
+
+            makeWall({
+              width: width,
+              height: wallHeight,
+              depth: thickness,
+              position: `${center.x} ${topY + wallHeight / 2} ${minZ}`,
+            });
+
+            makeWall({
+              width: width,
+              height: wallHeight,
+              depth: thickness,
+              position: `${center.x} ${topY + wallHeight / 2} ${maxZ}`,
+            });
+
+            makeWall({
+              width: thickness,
+              height: wallHeight,
+              depth: depth,
+              position: `${minX} ${topY + wallHeight / 2} ${center.z}`,
+            });
+
+            makeWall({
+              width: thickness,
+              height: wallHeight,
+              depth: depth,
+              position: `${maxX} ${topY + wallHeight / 2} ${center.z}`,
+            });
+
+            const player = document.querySelector("#player");
+            if (player) {
+              player.setAttribute(
+                "position",
+                `${center.x} ${topY + this.data.playerYOffset} ${center.z}`
+              );
+              const dyn = player.getAttribute("dynamic-body");
+              if (dyn && player.body) {
+                player.object3D.position.set(
+                  center.x,
+                  topY + this.data.playerYOffset,
+                  center.z
+                );
+                if (player.body && player.body.position) {
+                  player.body.position.set(
+                    center.x,
+                    topY + this.data.playerYOffset,
+                    center.z
+                  );
+                  player.body.velocity.set(0, 0, 0);
+                }
+              }
+            }
+          });
+        },
+      });
+
+      // ✨ Componente para teletransportar ao clicar
+      AFRAME.registerComponent("teleport-on-click", {
+        schema: {
+          targetUrl: { type: "string" },
+        },
+        init: function () {
+          this.el.addEventListener("click", () => {
+            window.location.href = this.data.targetUrl;
+          });
+        },
+      });
+    </script>
+  </head>
+
+  <body>
+    <a-scene physics="gravity: -9.8">
+      <!-- 🌤️ Céu -->
+      <a-sky src="island1sky.jpg" rotation="0 -90 0"></a-sky>
+
+      <!-- 💡 Luzes -->
+      <a-entity light="type: ambient; intensity: 1; color: #ffffff"></a-entity>
+      <a-entity
+        light="type: directional; intensity: 0.8; color: #ffffff"
+        position="5 10 5"
+      ></a-entity>
+
+      <!-- 🏝️ Ilha -->
+      <a-entity
+        id="floatingIsland"
+        gltf-model="floating_island.glb"
+        position="0 0 0"
+        scale="0.3 0.3 0.3"
+        rotation="0 0 0"
+        static-body="shape: concave"
+        floating
+        create-island-walls="playerYOffset: -75"
+      >
+      </a-entity>
+
+      <!-- TEST -->
+      <a-box
+        id="test-box"
+        width="1"
+        height="1"
+        depth="1"
+        position="0 180 0"
+        material="side: double; color: blue;"
+        custon-grabbable
+      ></a-box>
+
+      <!-- 🎮 Jogador -->
+      <a-entity id="player" movement-controls="fly: false; speed: 1">
+        <a-camera position="0 1.6 0">
+          <!-- IMPORTANT - Remove <a-cursor> tag after development -->
+          <a-cursor color="yellow"></a-cursor>
+        </a-camera>
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          raycaster="objects: .grabbable"
+          cursor
+        ></a-entity>
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          raycaster="objects: .grabbable"
+          cursor
+        ></a-entity>
+      </a-entity>
+
+      <!-- 🔮 Esfera flutuante com texto -->
+      <a-entity
+        id="magicSphere"
+        position="14 180 15"
+        floating="amplitude: 0.1; speed: 2"
+        teleport-on-click="targetUrl: plastic.html"
+        class="clickable"
+      >
+        <a-sphere
+          radius="10"
+          color="#88ccff"
+          metalness="1"
+          roughness="0.1"
+          emissive="#88ccff"
+          emissiveIntensity="2"
+          segments-width="32"
+          segments-height="32"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
+        >
+        </a-sphere>
+
+        <!-- 🪧 Texto -->
+        <a-entity position="0 15 0">
+          <a-plane
+            height="6.5"
+            width="18.5"
+            color="#ffff66"
+            emissive="#ffff66"
+            emissiveIntensity="2"
+            opacity="0.8"
+          ></a-plane>
+
+          <a-plane
+            height="6"
+            width="18"
+            color="black"
+            opacity="0.3"
+            position="0 0 0.02"
+          ></a-plane>
+
+          <a-text
+            value="TELETRANSPORTAR"
+            align="center"
+            color="#ffff66"
+            position="0 0 0.05"
+            width="10"
+            scale="8 8 8"
+          ></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- 💡 Luz da esfera -->
+      <a-light type="point" intensity="2" distance="5" color="#88ccff">
+      </a-light>
+    </a-scene>
+  </body>
+</html>
