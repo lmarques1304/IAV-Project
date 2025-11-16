@@ -1,37 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Recycle Islands VR - Glass Island</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Recycle Islands VR - Ilha de Vidro Forçado</title>
+
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  </head>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script> 
 
-  <body>
-    <a-scene background="color: #87CEEB">
-      
-      <a-entity light="type: ambient; intensity: 1"></a-entity>
-      <a-entity light="type: directional; intensity: 0.8" position="1 1 0"></a-entity>
+    <script>
+        // 🌊 Componente de Flutuação Suave
+        AFRAME.registerComponent('floating', {
+            schema: { amplitude: {type:'number', default:0.2}, speed: {type:'number', default:1.5} },
+            init: function () { this.startY = this.el.object3D.position.y; this.time = 0; },
+            tick: function (t, dt) {
+                this.time += dt / 1000;
+                const yOffset = Math.sin(this.time * this.data.speed) * this.data.amplitude;
+                this.el.object3D.position.y = this.startY + yOffset;
+            }
+        });
 
-      <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#f1d28a"></a-plane>
+        // ✨ Componente de Esfera Flutuante com Teletransporte
+        AFRAME.registerComponent('glass-island-sphere', {
+            init: function () {
+                const sceneEl = this.el.sceneEl;
+                
+                this.el.addEventListener('model-loaded', () => {
+                    const box = new THREE.Box3().setFromObject(this.el.object3D);
+                    const center = new THREE.Vector3();
+                    box.getCenter(center);
+                    const topY = box.max.y;
 
-      <a-plane position="0 -0.01 -10" rotation="-90 0 0" width="50" height="50" color="#00b3ff" opacity="0.7"></a-plane>
+                    const sphereEntity = document.createElement('a-entity');
+                    sphereEntity.setAttribute('position', `${center.x} ${topY + 1.5} ${center.z}`); 
+                    sphereEntity.setAttribute('floating', 'amplitude:0.1; speed:2');
+                    sphereEntity.setAttribute('class', 'clickable');
 
-      <a-text 
-        value="Texto de instrucao (?)
-        aumentar a ilha"
-        position="-2 2 -3"
-        width="6"
-        color="#084c61">
-      </a-text>
+                    // Esfera (Brilho Intenso)
+                    const aSphere = document.createElement('a-sphere');
+                    aSphere.setAttribute('radius', '1.5');
+                    aSphere.setAttribute('color', '#88ccff');
+                    aSphere.setAttribute('metalness', '1');
+                    aSphere.setAttribute('roughness', '0.1');
+                    aSphere.setAttribute('emissive', '#88ccff');
+                    aSphere.setAttribute('emissiveIntensity', '2'); 
+                    aSphere.setAttribute('segments-width', '32');
+                    aSphere.setAttribute('segments-height', '32');
+                    aSphere.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear');
 
-      <a-entity camera look-controls position="0 1.6 5">
-        <a-cursor 
-          color="#fff" 
-          fuse="true" 
-          fuse-timeout="700">
-        </a-cursor>
-      </a-entity>
+                    sphereEntity.appendChild(aSphere);
+
+                    // Texto e Plano
+                    const textEntity = document.createElement('a-entity');
+                    textEntity.setAttribute('position', '0 2 0');
+
+                    const plane1 = document.createElement('a-plane');
+                    plane1.setAttribute('height','0.8');
+                    plane1.setAttribute('width','2.5');
+                    plane1.setAttribute('color','#ffff66');
+                    plane1.setAttribute('emissive','#ffff66');
+                    plane1.setAttribute('emissiveIntensity','2');
+                    plane1.setAttribute('opacity','0.8');
+
+                    const plane2 = document.createElement('a-plane');
+                    plane2.setAttribute('height','0.7');
+                    plane2.setAttribute('width','2.4');
+                    plane2.setAttribute('color','black');
+                    plane2.setAttribute('opacity','0.3');
+                    plane2.setAttribute('position','0 0 0.02');
+
+                    const aText = document.createElement('a-text');
+                    aText.setAttribute('value','TELETRANSPORTAR');
+                    aText.setAttribute('align','center');
+                    aText.setAttribute('color','#ffff66');
+                    aText.setAttribute('position','0 0 0.05');
+                    aText.setAttribute('width','2');
+                    aText.setAttribute('scale','2 2 2');
+
+                    textEntity.appendChild(plane1);
+                    textEntity.appendChild(plane2);
+                    textEntity.appendChild(aText);
+                    
+                    sphereEntity.addEventListener('click', () => { window.location.href = 'plastic.html'; });
+
+                    sphereEntity.appendChild(textEntity);
+                    sceneEl.appendChild(sphereEntity);
+                });
+            }
+        });
+
+        // 🚨 NOVO COMPONENTE: Sobrescreve o material de malha GLTF via JavaScript 
+        AFRAME.registerComponent('override-gltf-material', {
+            init: function () {
+                this.el.addEventListener('model-loaded', () => {
+                    const mesh = this.el.getObject3D('mesh');
+                    if (!mesh) return;
+
+                    // Cria um novo material com as propriedades de vidro CLARO (cor ajustada para #556677)
+                    const newMaterial = new THREE.MeshStandardMaterial({
+                        color: new THREE.Color('#556677'), // CLAREADO: Era #334455, agora é um cinza azulado mais claro
+                        transparent: true,
+                        opacity: 0.7, 
+                        metalness: 0.9, 
+                        roughness: 0.1, 
+                    });
+
+                    mesh.traverse((node) => {
+                        if (node.isMesh) {
+                            node.material = newMaterial;
+                            node.material.needsUpdate = true;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <a-scene physics="gravity: -9.8">
+
+        <a-assets>
+            <img id="skyTexture" src="island2sky.jfif"> 
+        </a-assets>
+        
+        <a-entity light="type: ambient; color: #ffffff; intensity: 0.6"></a-entity>
+        <a-entity light="type: directional; color: #ffffff; intensity: 0.8" position="10 20 10"></a-entity>
+
+        <a-entity 
+            light="type: point; color: #0077ff; intensity: 2.0; distance: 10" 
+            position="0 -2.8 0">
+        </a-entity>
+
+        <a-sky src="#skyTexture"></a-sky> 
+
+        <a-gltf-model
+            id="island"
+            src="glassIsland.glb"
+            position="0 -3.8 0"
+            rotation="0 0 0"
+            scale="9 9 9"
+            static-body="shape: mesh"
+            override-gltf-material
+            glass-island-sphere>
+        </a-gltf-model>
+
+        <a-entity id="player"
+                  position="0 -2 0" 
+                  movement-controls="fly: false; speed: 10">
+            <a-entity camera look-controls>
+                <a-cursor color="#fff" fuse="true" fuse-timeout="700"></a-cursor>
+            </a-entity>
+        </a-entity>
 
     </a-scene>
-  </body>
+</body>
 </html>

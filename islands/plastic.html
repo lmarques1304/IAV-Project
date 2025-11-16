@@ -1,32 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Recycle Islands VR - Plastic Island</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Recycle Islands VR - Ilha de Plástico</title>
+
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
-    <script src="../js/island.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script> 
 
-  </head>
+    <script>
+        // 🌊 Componente de Flutuação Suave (Reutilizado)
+        AFRAME.registerComponent('floating', {
+            schema: { amplitude: {type:'number', default:0.2}, speed: {type:'number', default:1.5} },
+            init: function () { this.startY = this.el.object3D.position.y; this.time = 0; },
+            tick: function (t, dt) {
+                this.time += dt / 1000;
+                const yOffset = Math.sin(this.time * this.data.speed) * this.data.amplitude;
+                this.el.object3D.position.y = this.startY + yOffset;
+            }
+        });
+        
+        // 🚨 COMPONENTE: Sobrescreve o material de malha GLTF para Plástico com TEXTURA (MANTIDO)
+        AFRAME.registerComponent('override-gltf-plastic-material', {
+            schema: {
+                textureSrc: { type: 'selector' } 
+            },
+            init: function () {
+                this.el.addEventListener('model-loaded', () => {
+                    const mesh = this.el.getObject3D('mesh');
+                    if (!mesh) return;
 
-  <body>
-    <a-scene>
+                    const textureEl = this.data.textureSrc;
+                    let texture = null;
 
-      <a-sky></a-sky>
+                    if (textureEl) {
+                        const loader = new THREE.TextureLoader();
+                        loader.setCrossOrigin('anonymous'); 
 
-      <a-entity id="defaultLight"></a-entity>
+                        texture = loader.load(textureEl.src);
+                        texture.wrapS = THREE.RepeatWrapping;
+                        texture.wrapT = THREE.RepeatWrapping;
+                        texture.repeat.set(10, 10); 
+                    }
+                    
+                    const newMaterial = new THREE.MeshStandardMaterial({
+                        color: new THREE.Color(0xFFFFFF), 
+                        map: texture, 
+                        metalness: 0.1, 
+                        roughness: 0.7,
+                    });
 
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+                    mesh.traverse((node) => {
+                        if (node.isMesh) {
+                            node.material = newMaterial;
+                            node.material.needsUpdate = true;
+                        }
+                    });
+                });
+            }
+        });
+        // Componente 'plastic-island-sphere' foi removido
+    </script>
+</head>
 
-      <a-entity id="rig">
-        <a-entity id="camera" camera look-controls></a-entity>
-        <a-entity id="leftHand" oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
-      </a-entity>
+<body>
+    <a-scene physics="gravity: -9.8">
 
-      <a-plane class="ground" rotation="-90 0 0"></a-plane>
+        <a-assets>
+            <img id="plasticSkyTexture" src="plastic_sky.jpg"> 
+            <img id="plasticGroundTexture" src="plastic_texture.jpg!w700wp"> 
+        </a-assets>
+        
+        <a-entity light="type: ambient; color: #ffffff; intensity: 0.6"></a-entity>
+        <a-entity light="type: directional; color: #ffffff; intensity: 0.8" position="10 20 10"></a-entity>
+        <a-entity 
+            light="type: point; color: #FFA500; intensity: 1.8; distance: 10" 
+            position="0 -2.8 0">
+        </a-entity>
+        <a-sphere 
+            radius="2000" 
+            material="src: #plasticSkyTexture; side: back" 
+            position="0 0 0">
+        </a-sphere>
+
+        <a-gltf-model
+            id="plastic-island"
+            src="plasticIsland.glb"
+            position="0 -200 0"
+            rotation="0 0 0"
+            scale="9 9 9"
+            static-body="shape: mesh"
+            override-gltf-plastic-material="textureSrc: #plasticGroundTexture">
+        </a-gltf-model>
+
+        <a-entity 
+            id="teleport-sphere-group"
+            position="0 200 0" floating="amplitude:0.1; speed:2"
+            class="clickable"
+            onclick="window.location.href='plastic.html'">
+            
+            <a-sphere 
+                radius="20"
+                color="#FF6347" 
+                metalness="0.1" 
+                roughness="0.6" 
+                emissive="#FF6347"
+                emissiveIntensity="0.8" 
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+            </a-sphere>
+
+            <a-entity position="0 2 0">
+                <a-plane height="0.8" width="2.5" color="#ffff66" emissive="#ffff66" emissiveIntensity="2" opacity="0.8"></a-plane>
+                <a-plane height="0.7" width="2.4" color="black" opacity="0.3" position="0 0 0.02"></a-plane>
+                <a-text value="ILHA PLÁSTICO" align="center" color="#ffff66" position="0 0 0.05" width="2" scale="2 2 2"></a-text>
+            </a-entity>
+        </a-entity>
+
+        <a-entity id="player"
+                  position="0 150 0" 
+                  movement-controls="fly: false; speed: 10">
+            <a-entity camera look-controls>
+                <a-cursor color="#fff" fuse="true" fuse-timeout="700"></a-cursor>
+            </a-entity>
+        </a-entity>
 
     </a-scene>
-  </body>
+</body>
 </html>
