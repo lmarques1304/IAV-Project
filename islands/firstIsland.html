@@ -189,17 +189,18 @@
           <!-- IMPORTANT - Remove <a-cursor> tag after development -->
           <a-cursor color="yellow"></a-cursor>
         </a-camera>
-        
-        <a-entity id="leftHand"
-          laser-controls="hand: left"
-          blink-controls="cameraRig: #player; teleportOrigin: #camera; collisionEntities: .ground; button: thumbstick">
-        </a-entity>
-
-        <a-entity id="rightHand"
-          laser-controls="hand: right"
-          blink-controls="cameraRig: #player; teleportOrigin: #camera; collisionEntities: .ground; button: thumbstick">
-        </a-entity>
-
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          raycaster="objects: .custom-grabbable"
+          cursor
+        ></a-entity>
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          raycaster="objects: .grabbable"
+          cursor
+        ></a-entity>
       </a-entity>
 
       <!-- 🔮 Esfera flutuante com texto -->
