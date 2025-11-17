@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
     <script src="../js/custom-grabbable.js"></script>
+    <script src="../js/blink-controls.js"></script>
 
     <script>
       // 🌊 Componente para flutuar a ilha suavemente
@@ -161,6 +162,7 @@
       <!-- 🏝️ Ilha -->
       <a-entity
         id="floatingIsland"
+        class="ground"
         gltf-model="floating_island.glb"
         position="0 0 0"
         scale="0.3 0.3 0.3"
@@ -187,18 +189,17 @@
           <!-- IMPORTANT - Remove <a-cursor> tag after development -->
           <a-cursor color="yellow"></a-cursor>
         </a-camera>
-        <a-entity
-          id="left-hand"
-          hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
-          cursor
-        ></a-entity>
-        <a-entity
-          id="right-hand"
-          hand-controls="hand: right; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
-          cursor
-        ></a-entity>
+        
+        <a-entity id="leftHand"
+          laser-controls="hand: left"
+          blink-controls="cameraRig: #player; teleportOrigin: #camera; collisionEntities: .ground; button: thumbstick">
+        </a-entity>
+
+        <a-entity id="rightHand"
+          laser-controls="hand: right"
+          blink-controls="cameraRig: #player; teleportOrigin: #camera; collisionEntities: .ground; button: thumbstick">
+        </a-entity>
+
       </a-entity>
 
       <!-- 🔮 Esfera flutuante com texto -->
