@@ -51,20 +51,20 @@
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
+          raycaster="objects: .custom-grabbable; showLine: true; far: 10"
           cursor
         ></a-entity>
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
+          raycaster="objects: .custom-grabbable; showLine: true; far: 10"
           cursor
         ></a-entity>
       </a-entity>
 
       <a-box
         class="ground"
-        position="0 -1 0"
+        position="0 0 0"
         scale="60 60 1"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
@@ -108,7 +108,7 @@
           const x = Math.random() * planeWidth - planeWidth / 2;
           const z =
             Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
+          tree.setAttribute("position", `${x} 0 ${z}`);
           tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
           document.querySelector("a-scene").appendChild(tree);
         }
@@ -120,7 +120,7 @@
           const x = Math.random() * planeWidth - planeWidth / 2;
           const z =
             Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
+          tree.setAttribute("position", `${x} 0 ${z}`);
           tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
           document.querySelector("a-scene").appendChild(tree);
         }
@@ -132,7 +132,7 @@
           const x = Math.random() * planeWidth - planeWidth / 2;
           const z =
             Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
+          tree.setAttribute("position", `${x} 0 ${z}`);
           tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
           document.querySelector("a-scene").appendChild(tree);
         }
@@ -144,7 +144,7 @@
           const x = Math.random() * planeWidth - planeWidth / 2;
           const z =
             Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
+          tree.setAttribute("position", `${x} 0 ${z}`);
           tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
           document.querySelector("a-scene").appendChild(tree);
         }
@@ -164,7 +164,7 @@
           plastic.setAttribute("gltf-model", "#plasticItem1");
           plastic.setAttribute(
             "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.4 ${
+            `${Math.random() * sandWidth - sandWidth / 2} 0 ${
               Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
             }`
           );
@@ -180,7 +180,7 @@
           plastic.setAttribute("gltf-model", "#plasticItem2");
           plastic.setAttribute(
             "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.4 ${
+            `${Math.random() * sandWidth - sandWidth / 2} 0 ${
               Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
             }`
           );
@@ -196,7 +196,7 @@
           plastic.setAttribute("gltf-model", "#plasticItem3");
           plastic.setAttribute(
             "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.2 ${
+            `${Math.random() * sandWidth - sandWidth / 2} 0 ${
               Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
             }`
           );
