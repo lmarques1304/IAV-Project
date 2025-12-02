@@ -23,7 +23,7 @@ AFRAME.registerComponent("custom-grabbable", {
     this.grabbingHand = hand;
 
     // Temporarily disable physics by removing the dynamic-body while grabbing
-    this.el.removeAttribute("dynamic-body");
+    //this.el.removeAttribute("dynamic-body");
 
     // Attach the object to the grabbing hand
     this.grabbingHand.object3D.attach(this.el.object3D);
