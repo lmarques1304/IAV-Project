@@ -44,7 +44,7 @@
       </a-light>
 
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
-        <a-camera position="0 1 0">
+        <a-camera position="0 0.5 0">
           <!-- IMPORTANT - Remove <a-cursor> tag after development -->
           <a-cursor color="yellow"></a-cursor>
         </a-camera>
@@ -168,7 +168,7 @@
           );
           plastic.setAttribute("scale", "0.1 0.1 0.1");
           plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
-          plastic.setAttribute("custom-grabbable");
+          plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
         }
@@ -184,7 +184,7 @@
           );
           plastic.setAttribute("scale", "2 2 2");
           plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          plastic.setAttribute("custom-grabbable");
+          plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
         }
@@ -200,7 +200,7 @@
           );
           plastic.setAttribute("scale", "3 3 3");
           plastic.setAttribute("rotation", `0 0 0`);
-          plastic.setAttribute("custom-grabbable");
+          plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
         }
