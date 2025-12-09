@@ -1,16 +1,22 @@
-AFRAME.registerComponent("delete-on-contact", {
-  schema: {
-    target: { type: "string", default: ".custom-grabbable" },
-  },
-
+AFRAME.registerComponent('delete-on-contact', {
   init: function () {
-    this.el.addEventListener("contactbegin", this.handleContact.bind(this));
-  },
+    // Use the physics system's 'collide' event
+    this.el.addEventListener('collide', (e) => {
+      
+      // Get the element attached to the physics body that hit the bin
+      const hitEl = e.detail.body ? e.detail.body.el : null;
 
-  handleContact: function (event) {
-    const targetEl = event.detail.body.el;
-    if (targetEl.matches(this.data.target)) {
-      targetEl.parentNode.removeChild(targetEl);
-    }
-  },
+      // Check if it's a grabbable item
+      if (hitEl && hitEl.classList.contains('grabbable')) {
+        
+        // CRITICAL FIX: Defer removal to the next tick. 
+        // Removing a physics body synchronously during a collision event crashes the engine.
+        setTimeout(() => {
+          if (hitEl.parentNode) {
+            hitEl.parentNode.removeChild(hitEl);
+          }
+        }, 0);
+      }
+    });
+  }
 });

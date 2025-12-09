@@ -8,58 +8,41 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
     <script src="../js/island.js"></script>
-    <script src="../js/custom-grabbable.js"></script>
+    <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
   </head>
 
   <body>
-    <a-scene>
+    <a-scene physics="gravity: -9.8; debug: false">
       <a-assets>
-        <a-asset-item
-          id="palmModel"
-          src="../assets/textures/Trees/Palm.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="plasticItem1"
-          src="../assets/plastic-trash/Bottle.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="plasticItem2"
-          src="../assets/plastic-trash/Soda.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="plasticItem3"
-          src="../assets/plastic-trash/bag.glb"
-        ></a-asset-item>
+        <a-asset-item id="palmModel" src="../assets/textures/Trees/Palm.glb"></a-asset-item>
+        <a-asset-item id="plasticItem1" src="../assets/plastic-trash/Bottle.glb"></a-asset-item>
+        <a-asset-item id="plasticItem2" src="../assets/plastic-trash/Soda.glb"></a-asset-item>
+        <a-asset-item id="plasticItem3" src="../assets/plastic-trash/bag.glb"></a-asset-item>
       </a-assets>
 
       <a-sky color="#87CEEB"></a-sky>
 
-      <a-light
-        type="point"
-        color="#ffdca8"
-        intensity="2"
-        distance="500"
-        position="0 20 0"
-      >
-      </a-light>
+      <a-light type="point" color="#ffdca8" intensity="2" distance="500" position="0 20 0"></a-light>
 
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
         <a-camera position="0 0.5 0">
-          <!-- IMPORTANT - Remove <a-cursor> tag after development -->
+           <a-cursor raycaster="objects: .grabbable" color="yellow"></a-cursor>
         </a-camera>
+
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
-          cursor
-        ></a-entity>
+          sphere-collider="objects: .grabbable; radius: 0.2"
+          simple-grab>
+        </a-entity>
+
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          raycaster="objects: .custom-grabbable"
-          cursor
-        ></a-entity>
+          sphere-collider="objects: .grabbable; radius: 0.2"
+          simple-grab>
+        </a-entity>
       </a-entity>
 
       <a-cylinder
@@ -111,53 +94,23 @@
         const planeHeight = 45;
         const planeOffsetZ = 0;
 
-        for (let i = 0; i < 10; i++) {
-          const tree = document.createElement("a-entity");
-          tree.setAttribute("gltf-model", "#palmModel");
-          tree.setAttribute("scale", "2 2 2");
-          const x = Math.random() * planeWidth - planeWidth / 2;
-          const z =
-            Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
-          tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          document.querySelector("a-scene").appendChild(tree);
-        }
+        const addTrees = (count, scale) => {
+           for (let i = 0; i < count; i++) {
+            const tree = document.createElement("a-entity");
+            tree.setAttribute("gltf-model", "#palmModel");
+            tree.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            const x = Math.random() * planeWidth - planeWidth / 2;
+            const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+            tree.setAttribute("position", `${x} -0.5 ${z}`);
+            tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            document.querySelector("a-scene").appendChild(tree);
+          }
+        };
 
-        for (let i = 0; i < 8; i++) {
-          const tree = document.createElement("a-entity");
-          tree.setAttribute("gltf-model", "#palmModel");
-          tree.setAttribute("scale", "2.5 2.5 2.5");
-          const x = Math.random() * planeWidth - planeWidth / 2;
-          const z =
-            Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
-          tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          document.querySelector("a-scene").appendChild(tree);
-        }
-
-        for (let i = 0; i < 6; i++) {
-          const tree = document.createElement("a-entity");
-          tree.setAttribute("gltf-model", "#palmModel");
-          tree.setAttribute("scale", "3.5 3.5 3.5");
-          const x = Math.random() * planeWidth - planeWidth / 2;
-          const z =
-            Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
-          tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          document.querySelector("a-scene").appendChild(tree);
-        }
-
-        for (let i = 0; i < 4; i++) {
-          const tree = document.createElement("a-entity");
-          tree.setAttribute("gltf-model", "#palmModel");
-          tree.setAttribute("scale", "4 4 4");
-          const x = Math.random() * planeWidth - planeWidth / 2;
-          const z =
-            Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-          tree.setAttribute("position", `${x} -0.5 ${z}`);
-          tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          document.querySelector("a-scene").appendChild(tree);
-        }
+        addTrees(10, 2);
+        addTrees(8, 2.5);
+        addTrees(6, 3.5);
+        addTrees(4, 4);
       </script>
 
       <script>
@@ -165,57 +118,35 @@
         const sandHeight = 55;
         const sandOffsetZ = 0;
 
-        const numPlastic1 = 55;
-        const numPlastic2 = 70;
-        const numPlastic3 = 10;
+        const createPlastic = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const plastic = document.createElement("a-entity");
+            plastic.setAttribute("gltf-model", modelId);
+            
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            plastic.setAttribute("position", `${x} ${yPos} ${z}`);
+            plastic.setAttribute("scale", scale);
 
-        for (let i = 0; i < numPlastic1; i++) {
-          const plastic = document.createElement("a-entity");
-          plastic.setAttribute("gltf-model", "#plasticItem1");
-          plastic.setAttribute(
-            "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.4 ${
-              Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
-            }`
-          );
-          plastic.setAttribute("scale", "0.1 0.1 0.1");
-          plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
-          plastic.setAttribute("custom-grabbable", "");
-          plastic.setAttribute("class", "custom-grabbable");
-          document.querySelector("a-scene").appendChild(plastic);
-        }
+            if (rotationType === 'random') {
+              plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === 'lying') {
+              plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
 
-        for (let i = 0; i < numPlastic2; i++) {
-          const plastic = document.createElement("a-entity");
-          plastic.setAttribute("gltf-model", "#plasticItem2");
-          plastic.setAttribute(
-            "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.4 ${
-              Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
-            }`
-          );
-          plastic.setAttribute("scale", "2 2 2");
-          plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-          plastic.setAttribute("custom-grabbable", "");
-          plastic.setAttribute("class", "custom-grabbable");
-          document.querySelector("a-scene").appendChild(plastic);
-        }
+            // CRITICAL: Must have 'grabbable' class
+            plastic.setAttribute("class", "grabbable");
+            
+            // Physics
+            plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
 
-        for (let i = 0; i < numPlastic3; i++) {
-          const plastic = document.createElement("a-entity");
-          plastic.setAttribute("gltf-model", "#plasticItem3");
-          plastic.setAttribute(
-            "position",
-            `${Math.random() * sandWidth - sandWidth / 2} -0.2 ${
-              Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ
-            }`
-          );
-          plastic.setAttribute("scale", "3 3 3");
-          plastic.setAttribute("rotation", `0 0 0`);
-          plastic.setAttribute("custom-grabbable", "");
-          plastic.setAttribute("class", "custom-grabbable");
-          document.querySelector("a-scene").appendChild(plastic);
-        }
+            document.querySelector("a-scene").appendChild(plastic);
+          }
+        };
+
+        createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, 'lying');
+        createPlastic("#plasticItem2", 70, "2 2 2", -0.4, 'random');
+        createPlastic("#plasticItem3", 10, "3 3 3", -0.2, 'random');
       </script>
 
       <script>
