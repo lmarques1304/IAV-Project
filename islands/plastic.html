@@ -45,16 +45,20 @@
       </a-light>
 
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
-        <a-camera position="0 0.5 0"> </a-camera>
+        <a-camera position="0 0.5 0">
+          <!-- IMPORTANT - Remove <a-cursor> tag after development -->
+        </a-camera>
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
           raycaster="objects: .custom-grabbable"
+          cursor
         ></a-entity>
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
           raycaster="objects: .custom-grabbable"
+          cursor
         ></a-entity>
       </a-entity>
 
