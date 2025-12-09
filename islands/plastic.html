@@ -9,6 +9,7 @@
 
     <script src="../js/island.js"></script>
     <script src="../js/custom-grabbable.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
   </head>
 
   <body>
@@ -32,7 +33,7 @@
         ></a-asset-item>
       </a-assets>
 
-      <a-sky></a-sky>
+      <a-sky color="#87CEEB"></a-sky>
 
       <a-light
         type="point"
@@ -61,6 +62,16 @@
           cursor
         ></a-entity>
       </a-entity>
+
+      <a-cylinder
+        id="bin"
+        color="gray"
+        height="1.5"
+        radius="0.5"
+        position="0 0 -5"
+        static-body
+        delete-on-contact
+      ></a-cylinder>
 
       <a-box
         class="ground"
@@ -170,6 +181,7 @@
           );
           plastic.setAttribute("scale", "0.1 0.1 0.1");
           plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+          plastic.setAttribute("dynamic-body", "");
           plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
@@ -186,6 +198,7 @@
           );
           plastic.setAttribute("scale", "2 2 2");
           plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+          plastic.setAttribute("dynamic-body", "");
           plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
@@ -202,6 +215,7 @@
           );
           plastic.setAttribute("scale", "3 3 3");
           plastic.setAttribute("rotation", `0 0 0`);
+          plastic.setAttribute("dynamic-body", "");
           plastic.setAttribute("custom-grabbable", "");
           plastic.setAttribute("class", "custom-grabbable");
           document.querySelector("a-scene").appendChild(plastic);
