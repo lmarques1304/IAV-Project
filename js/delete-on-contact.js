@@ -14,6 +14,7 @@ AFRAME.registerComponent('delete-on-contact', {
         setTimeout(() => {
           if (hitEl.parentNode) {
             hitEl.parentNode.removeChild(hitEl);
+            this.el.sceneEl.emit('item-deleted');
           }
         }, 0);
       }
