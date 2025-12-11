@@ -10,7 +10,7 @@
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
-    <!-- <script src="../js/garbage-throw-increment-and-sound.js"></script> -->
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
   </head>
 
   <body>
@@ -193,7 +193,7 @@
         createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
         createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
       </script>
-      <script>
+      <!-- <script>
         let deleteCount = 0;
         const counterEl = document.querySelector("#counter");
 
@@ -213,7 +213,7 @@
             garbageThrowSound = document.querySelector("#garbage-throw-sound");
             garbageThrowSound.components.sound.playSound();
           });
-      </script>
+      </script> -->
     </a-scene>
   </body>
 </html>
