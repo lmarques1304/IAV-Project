@@ -1,4 +1,4 @@
-//requires delete-on-contact.js to be loaded first
+//requires delete-on-contact.js to be loaded first and has to be defered
 //requires #counter element in html andd #garbage-throw-sound sound entity
 let deleteCount = 0;
 const counterEl = document.querySelector("#counter");

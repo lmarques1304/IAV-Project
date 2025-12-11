@@ -105,7 +105,7 @@
       </a-entity>
 
       <a-entity
-        sound="src: #bin-sound; volume: 0.3 positional: false"
+        sound="src: #bin-sound; volume: 1 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
@@ -193,27 +193,6 @@
         createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
         createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
       </script>
-      <!-- <script>
-        let deleteCount = 0;
-        const counterEl = document.querySelector("#counter");
-
-        document
-          .querySelector("a-scene")
-          .addEventListener("item-deleted", () => {
-            deleteCount++;
-            counterEl.setAttribute(
-              "text",
-              "value",
-              `Items collected: ${deleteCount}/10`
-            );
-            if (deleteCount >= 10) {
-              window.location.href = "metal.html";
-            }
-
-            garbageThrowSound = document.querySelector("#garbage-throw-sound");
-            garbageThrowSound.components.sound.playSound();
-          });
-      </script> -->
     </a-scene>
   </body>
 </html>
