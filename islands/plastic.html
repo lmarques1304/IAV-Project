@@ -15,34 +15,57 @@
   <body>
     <a-scene physics="gravity: -9.8; debug: false">
       <a-assets>
-        <a-asset-item id="palmModel" src="../assets/textures/Trees/Palm.glb"></a-asset-item>
-        <a-asset-item id="plasticItem1" src="../assets/plastic-trash/Bottle.glb"></a-asset-item>
-        <a-asset-item id="plasticItem2" src="../assets/plastic-trash/Soda.glb"></a-asset-item>
-        <a-asset-item id="plasticItem3" src="../assets/plastic-trash/bag.glb"></a-asset-item>
-        <a-asset-item id="binModel" src="../assets/bins/plastic-bin.glb"></a-asset-item>
+        <a-asset-item
+          id="palmModel"
+          src="../assets/textures/Trees/Palm.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="plasticItem1"
+          src="../assets/plastic-trash/Bottle.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="plasticItem2"
+          src="../assets/plastic-trash/Soda.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="plasticItem3"
+          src="../assets/plastic-trash/bag.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="binModel"
+          src="../assets/bins/plastic-bin.glb"
+        ></a-asset-item>
       </a-assets>
 
       <a-sky color="#87CEEB"></a-sky>
 
-      <a-light type="point" color="#ffdca8" intensity="2" distance="500" position="0 20 0"></a-light>
+      <a-light
+        type="point"
+        color="#ffdca8"
+        intensity="2"
+        distance="500"
+        position="0 20 0"
+      ></a-light>
 
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
         <a-camera position="0 0.5 0">
-           <a-cursor raycaster="objects: .grabbable" color="yellow"></a-cursor>
+          <a-cursor raycaster="objects: .grabbable" color="yellow"></a-cursor>
         </a-camera>
 
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.2"
-          simple-grab>
+          raycaster="objects: .grabbable; far: 1;"
+          simple-grab
+        >
         </a-entity>
 
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.2"
-          simple-grab>
+          raycaster="objects: .grabbable; far: 1;"
+          simple-grab
+        >
         </a-entity>
       </a-entity>
 
@@ -83,12 +106,13 @@
         const planeOffsetZ = 0;
 
         const addTrees = (count, scale) => {
-           for (let i = 0; i < count; i++) {
+          for (let i = 0; i < count; i++) {
             const tree = document.createElement("a-entity");
             tree.setAttribute("gltf-model", "#palmModel");
             tree.setAttribute("scale", `${scale} ${scale} ${scale}`);
             const x = Math.random() * planeWidth - planeWidth / 2;
-            const z = Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+            const z =
+              Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
             tree.setAttribute("position", `${x} -0.5 ${z}`);
             tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
             document.querySelector("a-scene").appendChild(tree);
@@ -110,21 +134,21 @@
           for (let i = 0; i < count; i++) {
             const plastic = document.createElement("a-entity");
             plastic.setAttribute("gltf-model", modelId);
-            
+
             const x = Math.random() * sandWidth - sandWidth / 2;
             const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
             plastic.setAttribute("position", `${x} ${yPos} ${z}`);
             plastic.setAttribute("scale", scale);
 
-            if (rotationType === 'random') {
+            if (rotationType === "random") {
               plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            } else if (rotationType === 'lying') {
+            } else if (rotationType === "lying") {
               plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
             }
 
             // CRITICAL: Must have 'grabbable' class
             plastic.setAttribute("class", "grabbable");
-            
+
             // Physics
             plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
 
@@ -132,30 +156,44 @@
           }
         };
 
-        createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, 'lying');
-        createPlastic("#plasticItem2", 70, "2 2 2", -0.4, 'random');
-        createPlastic("#plasticItem3", 10, "3 3 3", -0.2, 'random');
+        createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, "lying");
+        createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
+        createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
       </script>
 
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
-        <a-plane color="#000000" opacity="0.5" width="2" height="0.5" position="0 0 -0.1"></a-plane>
-        <a-entity id="counter" text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5" position="0 0 0"></a-entity>
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
       </a-entity>
 
       <script>
         let deleteCount = 0;
         const counterEl = document.querySelector("#counter");
 
-        document.querySelector('a-scene').addEventListener('item-deleted', () => {
-          deleteCount++;
-          counterEl.setAttribute('text', 'value', `Items collected: ${deleteCount}/10`);
-          if (deleteCount >= 10) {
-            window.location.href = 'metal.html';
-          }
-        });
+        document
+          .querySelector("a-scene")
+          .addEventListener("item-deleted", () => {
+            deleteCount++;
+            counterEl.setAttribute(
+              "text",
+              "value",
+              `Items collected: ${deleteCount}/10`
+            );
+            if (deleteCount >= 10) {
+              window.location.href = "metal.html";
+            }
+          });
       </script>
-
-
     </a-scene>
   </body>
 </html>
