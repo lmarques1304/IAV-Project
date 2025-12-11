@@ -83,11 +83,12 @@
         position="0 -0.5 -5"
         static-body
         delete-on-contact
-        ><a-entity
+        >
+        <!-- <a-entity
           sound="src: #bin-sound; volume: 0.1"
           id="garbage-throw-sound"
-        ></a-entity
-      ></a-entity>
+        ></a-entity> -->
+    </a-entity>
 
       <a-box
         class="ground"
@@ -205,10 +206,10 @@
               window.location.href = "metal.html";
             }
 
-            garbageThrowSound = document.querySelector(
-              "#garbage-throw-sound"
-            );
-            garbageThrowSound.components.sound.playSound();
+            //garbageThrowSound = document.querySelector(
+            //"#garbage-throw-sound"
+            //);
+            //garbageThrowSound.components.sound.playSound();
           });
       </script>
     </a-scene>
