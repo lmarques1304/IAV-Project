@@ -10,6 +10,7 @@
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
   </head>
 
   <body>
@@ -53,6 +54,8 @@
         position="0 20 0"
       ></a-light>
 
+
+      <!-- PLAYER -->
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
         <a-camera position="0 0.5 0">
           <a-entity
@@ -77,6 +80,22 @@
         </a-entity>
       </a-entity>
 
+      <!-- BIN AND COUNTER -->
+      <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
+      </a-entity>
+
       <a-entity
         id="bin"
         gltf-model="#binModel"
@@ -87,10 +106,11 @@
       </a-entity>
 
       <a-entity
-        sound="src: #bin-sound; volume: 0.1 positional: false"
+        sound="src: #bin-sound; volume: 0.3 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
+      <!-- ISLAND -->
       <a-box
         class="ground"
         position="0 -1 0"
@@ -173,43 +193,6 @@
         createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, "lying");
         createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
         createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
-      </script>
-
-      <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
-        <a-plane
-          color="#000000"
-          opacity="0.5"
-          width="2"
-          height="0.5"
-          position="0 0 -0.1"
-        ></a-plane>
-        <a-entity
-          id="counter"
-          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
-          position="0 0 0"
-        ></a-entity>
-      </a-entity>
-
-      <script>
-        let deleteCount = 0;
-        const counterEl = document.querySelector("#counter");
-
-        document
-          .querySelector("a-scene")
-          .addEventListener("item-deleted", () => {
-            deleteCount++;
-            counterEl.setAttribute(
-              "text",
-              "value",
-              `Items collected: ${deleteCount}/10`
-            );
-            if (deleteCount >= 10) {
-              window.location.href = "metal.html";
-            }
-
-            garbageThrowSound = document.querySelector("#garbage-throw-sound");
-            garbageThrowSound.components.sound.playSound();
-          });
       </script>
     </a-scene>
   </body>
