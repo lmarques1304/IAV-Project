@@ -40,6 +40,7 @@
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
       </a-assets>
 
       <a-sky color="#87CEEB"></a-sky>
@@ -82,6 +83,10 @@
         position="0 -0.5 -5"
         static-body
         delete-on-contact
+        ><a-entity
+          sound="src: #bin-sound; volume: 0.1"
+          id="garbage-throw-sound"
+        ></a-entity
       ></a-entity>
 
       <a-box
@@ -199,6 +204,11 @@
             if (deleteCount >= 10) {
               window.location.href = "metal.html";
             }
+
+            garbageThrowSound = document.querySelector(
+              "#garbage-throw-sound"
+            );
+            garbageThrowSound.components.sound.playSound();
           });
       </script>
     </a-scene>
