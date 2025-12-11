@@ -55,7 +55,7 @@
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          raycaster="objects: .grabbable; far: 1;"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
         >
         </a-entity>
@@ -63,7 +63,7 @@
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          raycaster="objects: .grabbable; far: 1;"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
         >
         </a-entity>
