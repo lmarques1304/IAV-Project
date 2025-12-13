@@ -4,47 +4,312 @@
     <meta charset="UTF-8" />
     <title>Recycle Islands VR - Glass Island</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
     <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
   </head>
 
   <body>
-    <a-scene>
+    <a-scene physics="gravity: -9.8; debug: false">
+      <a-assets>
+        <a-asset-item
+          id="palmModel"
+          src="../assets/textures/Trees/Palm.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="glassItem1"
+          src="../assets/glass/Bottle_wine.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="glassItem2"
+          src="../assets/glass/Glass.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="glassItem3"
+          src="../assets/glass/mini_Bottle.glb"
+        ></a-asset-item>
+                <a-asset-item
+          id="glassItem4"
+          src="../assets/glass/Smashed_Glass.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="binModel"
+          src="../assets/bins/glass-bin.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="bar"
+          src="../assets/beach/Bar.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem1"
+          src="../assets/beach/beach_ball.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem2"
+          src="../assets/beach/Blue_White_Beach_Umbrella.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem3"
+          src="../assets/beach/Crab.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem4"
+          src="../assets/beach/Dark_Blue_Beach_Umbrella.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem5"
+          src="../assets/beach/Rainbow_Beach_Umbrella.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem6"
+          src="../assets/beach/Red_White_Beach_Umbrella.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem7"
+          src="../assets/beach/Sand_castle.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem8"
+          src="../assets/beach/Surfboard.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="beachItem9"
+          src="../assets/beach/Umbrella_and_chairs.glb"
+        ></a-asset-item>
 
-      <a-sky></a-sky>
+        <audio
+          id="background-music"
+          src="../assets/sounds/background-music.wav"
+          preload="auto"
+        ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
 
-      <a-entity id="defaultLight"></a-entity>
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+      <a-sky color="#87CEEB"></a-sky>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 2" wasd-controls="acceleration: 20">
-        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+      <a-light
+        type="point"
+        color="#ffdca8"
+        intensity="2"
+        distance="500"
+        position="0 20 0"
+      ></a-light>
 
-        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+      <!-- PLAYER -->
+      <a-entity id="player" movement-controls="fly: false; speed: 0.2">
+        <a-camera position="0 0.5 0">
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.1 positional: false"
+          ></a-entity>
+        </a-camera>
 
-        <a-entity id="leftLaser" 
-                  laser-controls="hand: left"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
         </a-entity>
 
-        <a-entity id="rightLaser" 
-                  laser-controls="hand: right"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
         </a-entity>
-
       </a-entity>
+
+      <!-- BIN AND COUNTER -->
+      <a-entity id="counter-display" position="2 1.5 -7" scale="1.5 1.5 1.5">
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
+      </a-entity>
+
+      <a-entity
+        id="bin"
+        gltf-model="#binModel"
+        position="2 -0.9 -7"
+        scale="0.6 0.6 0.6"
+        static-body
+        delete-on-contact>
+      </a-entity>
+
+      <a-entity
+        sound="src: #bin-sound; volume: 1 positional: false"
+        id="garbage-throw-sound"
+      ></a-entity>
+
+      <!-- ISLAND -->
+      <a-box
+        class="ground"
+        position="0 -1 0"
+        scale="1000 50 0.1"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        repeat="1000 50"
+        static-body>
+      </a-box>
 
       <a-box
         class="ground"
-        position="0 -0.9 -15"
-        width="30"
-        height="15"
+        position="0 -1 25"
+        scale="1000 50 0.1"
         rotation="-90 0 0"
-        src="/assets/textures/Ground/Grass005_1K-JPG/Grass005_1K-JPG_Color.jpg"
-        repeat="30 15">
+        src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        repeat="1000 50"
+        static-body>
       </a-box>
 
+      <a-box
+        class="ground"
+        position="0 -1 -525"
+        scale="1000 1000 0.1"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Grass005_1K-JPG/Grass005_1K-JPG_Color.jpg"
+        repeat="1000 525"
+        static-body>
+      </a-box>
+
+      <a-plane
+        id="ocean"
+        position="0 -1 0"
+        width="1000"
+        height="1000"
+        rotation="-90 0 0"
+        material= "src:../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg; transparent: true; opacity: 0.2; shader: standard; roughness: 0.2; metalness: 0.1"
+        repeat="500 500"
+        animation__waveX= "property: material.offset.x; from: 0; to: 1; dur: 6000; loop: true; easing: linear;"
+        animation__waveY= "property: material.offset.y; from: 0; to: 1; dur: 8000; loop: true; easing: linear;"
+        static-body>
+      </a-plane>
+
+      <a-entity
+        gltf-model="#bar"
+        scale="3 3 3"
+        position="10 -1 -25"
+        rotation="0 0 0">
+      </a-entity>
+
+      <a-box
+      id=""
+      scale="5 0.2 5"
+      position="0 -0.9 -5"
+      color="grey"></a-box>
+
+      <script>
+        const beachWidth = 1000;
+        const beachHeight = 25;
+        const beachOffsetZ = 35;
+
+        const createBeachItem = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const item = document.createElement("a-entity");
+            item.setAttribute("gltf-model", modelId);
+            const x = Math.random() * beachWidth - beachWidth / 2;
+            const z =
+              Math.random() * beachHeight - beachHeight / 2 + beachOffsetZ;
+
+            item.setAttribute("position", `${x} ${yPos} ${z}`);
+            item.setAttribute("scale", scale);
+            if (rotationType === "random") {
+              item.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              item.setAttribute(
+                "rotation",
+                `90 0 ${Math.random() * 360}`
+              );
+            }
+            document.querySelector("a-scene").appendChild(item);
+          }
+        };
+        createBeachItem("#beachItem1", 10, "0.5 0.5 0.5", -0.8, "random");
+        createBeachItem("#beachItem2", 30, "3 3 3", -0.4, "random");
+        createBeachItem("#beachItem3", 50, "0.0001 0.0001 0.0001", -0.8, "random");
+        createBeachItem("#beachItem4", 20, "3 3 3", -0.4, "random");
+        createBeachItem("#beachItem5", 10, "3 3 3", -0.4, "random");
+        createBeachItem("#beachItem6", 30, "3 3 3", -0.4, "random");
+        createBeachItem("#beachItem7", 15, "0.01 0.01 0.01", -0.9, "random");
+        createBeachItem("#beachItem8", 10, "0.05 0.05 0.05", -0.3, "random");
+        createBeachItem("#beachItem9", 5, "0.005 0.005 0.005", -0.1, "random");
+
+      </script>
+      
+      <script>
+        const planeWidth = 1000;
+        const planeHeight = 50;
+        const planeOffsetZ = 0;
+
+        const addPalms = (count, scale) => {
+          for (let i = 0; i < count; i++) {
+            const tree = document.createElement("a-entity");
+            tree.setAttribute("gltf-model", "#palmModel");
+            tree.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            const x = Math.random() * planeWidth - planeWidth / 2;
+            const z =
+              Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+            tree.setAttribute("position", `${x} -0.9 ${z}`);
+            tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            document.querySelector("a-scene").appendChild(tree);
+          }
+        };
+        addPalms(10, 2);
+        addPalms(15, 2.5);
+        addPalms(20, 3.5);
+        addPalms(25, 4);
+      </script>
+
+      <script>
+        const sandWidth = 75;
+        const sandHeight = 75;
+        const sandOffsetZ = -25;
+
+        const createGlass = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const plastic = document.createElement("a-entity");
+            plastic.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            plastic.setAttribute("position", `${x} ${yPos} ${z}`);
+            plastic.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            // CRITICAL: Must have 'grabbable' class
+            plastic.setAttribute("class", "grabbable");
+
+            // Physics
+            plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+
+            document.querySelector("a-scene").appendChild(plastic);
+          }
+        };
+
+        createGlass("#glassItem1", 70, "0.2 0.2 0.2", -0.4, "random");
+        createGlass("#glassItem2", 80, "0.05 0.05 0.05", -0.4, "random");
+        createGlass("#glassItem3", 20, "0.1 0.1 0.1", -0.9, "random");
+        createGlass("#glassItem4", 20, "0.5 0.5 0.5", -0.45, "random");
+
+      </script>
     </a-scene>
   </body>
 </html>
