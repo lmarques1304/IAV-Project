@@ -7,7 +7,22 @@ document.querySelector("a-scene").addEventListener("item-deleted", () => {
   deleteCount++;
   counterEl.setAttribute("text", "value", `Items collected: ${deleteCount}/10`);
   if (deleteCount >= 10) {
-    window.location.href = "metal.html";
+    const currentPage = window.location.pathname.split("/").pop();
+    let nextPage;
+    switch (currentPage) {
+      case "plastic.html":
+        nextPage = "metal.html";
+        break;
+      case "metal.html":
+        nextPage = "glass.html";
+        break;
+      case "glass.html":
+        nextPage = "electronic.html";
+        break;
+    }
+    if (nextPage) {
+      window.location.href = nextPage;
+    }
   }
 
   garbageThrowSound = document.querySelector("#garbage-throw-sound");
