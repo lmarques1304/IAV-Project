@@ -1,66 +1,69 @@
-/* File: js/spawner.js
-  Usage: <a-entity random-spawner="model: #myModel; count: 10"></a-entity>
-*/
-
+/* File: js/spawner.js */
 AFRAME.registerComponent("random-spawner", {
   schema: {
     model: { type: "string", default: "" },
     count: { type: "int", default: 10 },
     scale: { type: "vec3", default: { x: 1, y: 1, z: 1 } },
-    areaSize: { type: "number", default: 50 }, // Width/Depth of the area
-    offsetZ: { type: "number", default: 0 }, // Shift the area forward/back
+    areaSize: { type: "number", default: 50 },
+    offsetZ: { type: "number", default: 0 },
     yPos: { type: "number", default: 0 },
-    rotationType: { type: "string", default: "randomY" }, // 'randomY' or 'lying'
+    rotationType: { type: "string", default: "randomY" },
     isGrabbable: { type: "boolean", default: false },
-    physics: { type: "string", default: "none" }, // 'none', 'static', 'dynamic'
+    physics: { type: "string", default: "none" },
   },
 
   init: function () {
-    // We use a document fragment to improve performance (batches DOM updates)
     const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < this.data.count; i++) {
       const el = document.createElement("a-entity");
 
-      // 1. Set Model
+      // 1. ADD INVISIBLE HITBOX (The Fix)
+      // This gives the object immediate size so the hand can find it.
+      // We make it roughly 0.5m size, visible=false so the player doesn't see it.
+      el.setAttribute(
+        "geometry",
+        "primitive: box; width: 0.5; height: 0.5; depth: 0.5"
+      );
+      el.setAttribute("material", "visible: false");
+
+      // 2. Set Model
       if (this.data.model) {
         el.setAttribute("gltf-model", this.data.model);
       }
 
-      // 2. Set Position (Random X/Z, Fixed Y)
+      // 3. Set Position & Scale
       const x = (Math.random() - 0.5) * this.data.areaSize;
       const z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
       el.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
-
-      // 3. Set Scale
       el.setAttribute("scale", this.data.scale);
 
-      // 4. Set Rotation
+      // 4. Rotation
       if (this.data.rotationType === "lying") {
-        // Lying down (good for trash on ground)
         el.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
       } else {
-        // Upright but rotated randomly (good for trees/props)
         el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
       }
 
-      // 5. Classes (Interaction)
+      // 5. Interaction
       if (this.data.isGrabbable) {
         el.classList.add("grabbable");
       }
 
+      // 6. Physics (Wait for load, but now we have the hitbox as backup)
       if (this.data.physics !== "none") {
-        // Define the function that adds physics
         const addPhysics = () => {
+          // Remove the temporary hitbox geometry so it doesn't conflict with the model shape
+          el.removeAttribute("geometry");
+          el.removeAttribute("material");
+
           if (this.data.physics === "dynamic") {
-            // "hull" is often more accurate than "auto" for trash items
             el.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
           } else if (this.data.physics === "static") {
-            el.setAttribute("static-body", "shape: hull");
+            el.setAttribute("static-body", "shape: auto");
           }
         };
 
-        // If it's a model, wait for it to load. If it's a primitive (box/sphere), add immediately.
         if (this.data.model) {
           el.addEventListener("model-loaded", addPhysics);
         } else {
