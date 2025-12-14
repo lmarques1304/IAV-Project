@@ -1,4 +1,4 @@
-/* File: js/spawner.js */
+/* File: js/random-spawner.js */
 AFRAME.registerComponent("random-spawner", {
   schema: {
     model: { type: "string", default: "" },
@@ -16,66 +16,52 @@ AFRAME.registerComponent("random-spawner", {
     const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < this.data.count; i++) {
-      const el = document.createElement("a-entity");
-
-      // 1. ADD INVISIBLE HITBOX
-      // We keep this geometry! It provides a solid volume for the hand collider to grab.
-      el.setAttribute(
-        "geometry",
-        "primitive: box; width: 0.5; height: 0.5; depth: 0.5"
-      );
-      // Visible false means the player sees the model, but the 'hand' feels the box.
-      el.setAttribute("material", "visible: false");
-
-      // 2. Set Model
-      if (this.data.model) {
-        el.setAttribute("gltf-model", this.data.model);
-      }
-
-      // 3. Set Position & Scale
+      // 1. Create the PARENT container (The Hitbox & Physics Body)
+      const container = document.createElement("a-entity");
+      
       const x = (Math.random() - 0.5) * this.data.areaSize;
       const z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
-      el.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
-      el.setAttribute("scale", this.data.scale);
-
-      // 4. Rotation
+      
+      container.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
+      
+      // Rotate the container so the physics box rotates too
       if (this.data.rotationType === "lying") {
-        el.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+        container.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
       } else {
-        el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+        container.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
       }
 
-      // 5. Interaction
+      // HITBOX: A semi-transparent box so you can see where to grab.
+      // Set visible: false later if you want it perfectly hidden.
+      container.setAttribute("geometry", "primitive: box; width: 0.6; height: 0.6; depth: 0.6");
+      container.setAttribute("material", "color: red; opacity: 0.01; visible: true; transparent: true");
+
       if (this.data.isGrabbable) {
-        el.classList.add("grabbable");
+        container.classList.add("grabbable");
       }
 
-      // 6. Physics
+      // PHYSICS: Apply to the parent container
       if (this.data.physics !== "none") {
-        const addPhysics = () => {
-          // FIX 1: Do NOT remove the geometry/material.
-          // By keeping the invisible box, we ensure stable physics (box shape)
-          // and reliable grabbing (hand finds the box easily).
-
-          // FIX 2: Correctly assign dynamic vs static
-          if (this.data.physics === "dynamic") {
-            // Dynamic needs mass to fall/move
-            el.setAttribute("dynamic-body", "shape: auto; mass: 2");
-          } else if (this.data.physics === "static") {
-            el.setAttribute("static-body", "shape: auto");
-          }
-        };
-
-        if (this.data.model) {
-          // Wait for model to load ensures we don't apply physics too early,
-          // though with the box geometry kept, we could actually do it immediately.
-          el.addEventListener("model-loaded", addPhysics);
-        } else {
-          addPhysics();
-        }
+         if (this.data.physics === "dynamic") {
+            container.setAttribute("dynamic-body", "mass: 2; shape: box");
+         } else {
+            container.setAttribute("static-body", "shape: box");
+         }
       }
 
-      fragment.appendChild(el);
+      // 2. Create the CHILD (The Visual Model)
+      if (this.data.model) {
+        const modelEl = document.createElement("a-entity");
+        modelEl.setAttribute("gltf-model", this.data.model);
+        modelEl.setAttribute("scale", this.data.scale);
+        
+        // Center the model inside the hitbox
+        modelEl.setAttribute("position", "0 0 0"); 
+        
+        container.appendChild(modelEl);
+      }
+
+      fragment.appendChild(container);
     }
 
     this.el.sceneEl.appendChild(fragment);
