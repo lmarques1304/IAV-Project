@@ -57,9 +57,10 @@ AFRAME.registerComponent("random-spawner", {
           el.removeAttribute("geometry");
           el.removeAttribute("material");
 
-          if (this.data.physics === "dynamic") {
-            el.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
-          } else if (this.data.physics === "static") {
+          if (
+            this.data.physics === "dynamic" ||
+            this.data.physics === "static"
+          ) {
             el.setAttribute("static-body", "shape: auto");
           }
         };
