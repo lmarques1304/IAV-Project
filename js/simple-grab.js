@@ -1,4 +1,4 @@
-/* File: simple-grab.js */
+/* File: js/simple-grab.js */
 AFRAME.registerComponent("simple-grab", {
   init: function () {
     this.grabbedEl = null;
@@ -9,18 +9,17 @@ AFRAME.registerComponent("simple-grab", {
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
 
-    // 1. Collision Events
+    // Collision Event Listeners
     this.el.addEventListener("hit", this.onHit);
     this.el.addEventListener("hitend", this.onHitEnd);
 
-    // 2. VR Controller Buttons
+    // VR Controller Listeners
     this.el.addEventListener("triggerdown", this.onGrab);
     this.el.addEventListener("gripdown", this.onGrab);
     this.el.addEventListener("triggerup", this.onRelease);
     this.el.addEventListener("gripup", this.onRelease);
 
-    // 3. Desktop Testing (Click anywhere on screen to grab)
-    // We listen to the SCENE, not the hand, so you don't need a cursor to click the hand.
+    // Desktop/Mouse Listeners (Scene-wide for easier clicking)
     this.el.sceneEl.addEventListener("mousedown", this.onGrab);
     this.el.sceneEl.addEventListener("mouseup", this.onRelease);
   },
@@ -28,30 +27,30 @@ AFRAME.registerComponent("simple-grab", {
   onHit: function (evt) {
     if (this.grabbedEl) return;
 
-    // Get the intersected object
-    const hitEl = evt.detail.intersectedEls
+    const hitEl = evt.detail.intersectedEls && evt.detail.intersectedEls.length > 0
       ? evt.detail.intersectedEls[0]
       : evt.detail.el;
 
+    // Ensure we hit a grabbable object
     if (!hitEl || !hitEl.classList.contains("grabbable")) return;
 
-    // Visual Feedback: Make the hitbox more visible
     if (this.hoveredEl !== hitEl) {
       this.hoveredEl = hitEl;
-      // Save opacity to restore later
-      this.savedOpacity = this.hoveredEl.getAttribute("material")?.opacity || 0.01;
-      
-      // Increase opacity to show "Selected" state
-      this.hoveredEl.setAttribute("material", "opacity", 0.5); 
-      this.hoveredEl.setAttribute("material", "color", "#FFD700"); // Gold highlight
+
+      // VISUAL FEEDBACK: 
+      // 1. Make the invisible hitbox semi-visible yellow
+      this.hoveredEl.setAttribute("material", "visible", true);
+      this.hoveredEl.setAttribute("material", "opacity", 0.5);
+      this.hoveredEl.setAttribute("material", "color", "#FFFF00");
+      this.hoveredEl.setAttribute("material", "transparent", true);
     }
   },
 
   onHitEnd: function () {
     if (this.hoveredEl && !this.grabbedEl) {
-      // Restore opacity
-      this.hoveredEl.setAttribute("material", "opacity", this.savedOpacity);
-      this.hoveredEl.setAttribute("material", "color", "red"); // Back to invisible-ish red
+      // Hide the hitbox again when hand leaves
+      this.hoveredEl.setAttribute("material", "visible", false);
+      this.hoveredEl.setAttribute("material", "opacity", 1.0); // Reset defaults just in case
       this.hoveredEl = null;
     }
   },
@@ -61,24 +60,30 @@ AFRAME.registerComponent("simple-grab", {
 
     this.grabbedEl = this.hoveredEl;
 
-    // 1. Remove Physics (So we can move it manually)
+    // 1. Disable Physics so it doesn't fight the hand
     this.grabbedEl.removeAttribute("dynamic-body");
     this.grabbedEl.removeAttribute("static-body");
 
-    // 2. Parent to Hand
+    // 2. Attach to Hand
     this.el.object3D.attach(this.grabbedEl.object3D);
+    
+    // 3. Keep visual feedback (Optional: maybe turn green to show 'held')
+    this.grabbedEl.setAttribute("material", "color", "#00FF00");
   },
 
   onRelease: function () {
     if (!this.grabbedEl) return;
 
-    // 1. Re-attach to Scene (Drop it)
+    // 1. Re-attach to Scene
     this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
-    // 2. Restore Physics
-    this.grabbedEl.setAttribute("dynamic-body", "mass: 2; shape: box");
+    // 2. Re-enable Physics (Dynamic so it falls)
+    this.grabbedEl.setAttribute("dynamic-body", "mass: 5; shape: box");
 
-    // 3. Reset
+    // 3. Reset Visuals (Hide hitbox)
+    this.grabbedEl.setAttribute("material", "visible", false);
+
+    // 4. Clear State
     this.grabbedEl = null;
     this.hoveredEl = null;
   },
