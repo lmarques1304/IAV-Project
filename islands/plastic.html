@@ -10,6 +10,7 @@
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
   </head>
 
   <body>
@@ -154,7 +155,7 @@
       >
       </a-plane>
 
-      <script defer>
+      <script>
         const planeWidth = 45;
         const planeHeight = 45;
         const planeOffsetZ = 0;
@@ -178,7 +179,7 @@
         addTrees(6, 3.5);
         addTrees(4, 4);
       </script>
-      <script defer>
+      <script>
         const sandWidth = 55;
         const sandHeight = 55;
         const sandOffsetZ = 0;
@@ -243,7 +244,6 @@
         decorateBeach("#surfboard", 3, 0.1, -0.5); // Surfboards (stuck in sand)
         decorateBeach("#beachBall", 4, 0.01, 0.5); // Beach balls
       </script>
-      <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
     </a-scene>
   </body>
 </html>
