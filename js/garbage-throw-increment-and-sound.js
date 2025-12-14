@@ -19,6 +19,9 @@ document.querySelector("a-scene").addEventListener("item-deleted", () => {
       case "glass.html":
         nextPage = "electronic.html";
         break;
+      case "electronic.html":
+        window.location.href = "index.html";
+        break;
     }
     if (nextPage) {
       window.location.href = nextPage;
