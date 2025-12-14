@@ -77,28 +77,36 @@
       ></a-light>
 
                  
-      <a-entity id="player" movement-controls="fly: false; speed: 0.2">
+      <a-entity id="rig" movement-controls="fly: false; speed: 0.2">
+               
         <a-camera position="0 0.5 0">
+                                                 
           <a-entity
             sound="src: #background-music; autoplay: true; loop: true; volume: 0.2 positional: false"
           ></a-entity>
+                 
         </a-camera>
 
+                       
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
+                 
         </a-entity>
 
+               
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
+                 
         </a-entity>
+             
       </a-entity>
                        
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
@@ -133,7 +141,7 @@
 
                  
       <a-entity
-        sound="src: #bin-sound; volume: 1 positional: false"
+        sound="src: #bin-sound; volume: 1.4 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
@@ -193,10 +201,10 @@
           }
         }; // Garrafas de Vidro (#glassItem1): Reduzidas (0.1) e Y ajustado (-0.4)
 
-        createTrash("#glassItem1", 20, "0.2 0.2 0.2", -0.4, "random"); // Lupas (#glassItem2): Aumentadas (0.5) e Y ajustado (-0.4)
-        createTrash("#glassItem2", 15, "30 30 30", -50, "lying"); // Copos de Vidro (#glassItem3): Aumentados (0.3) e Y ajustado (-0.2)
+        createTrash("#glassItem1", 20, "0.1 0.1 0.1", -0.4, "random"); // Lupas (#glassItem2): Aumentadas (0.5) e Y ajustado (-0.4)
+        createTrash("#glassItem2", 15, "30 30 30", 2, "lying"); // Copos de Vidro (#glassItem3): Aumentados (0.3) e Y ajustado (-0.2)
 
-        createTrash("#glassItem3", 15, "0.15 0.15 0.15", 0.5, "random");
+        createTrash("#glassItem3", 15, "0.1 0.1 0.1", 0.5, "random");
       </script>
          
     </a-scene>
