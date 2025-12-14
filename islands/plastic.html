@@ -42,6 +42,28 @@
           preload="auto"
         ></audio>
         <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+
+        <a-asset-item
+          id="beachBar"
+          src="../assets/beach/Bar.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="umbrella"
+          src="../assets/beach/Umbrella_and_chairs.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="surfboard"
+          src="../assets/beach/Surfboard.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="castle"
+          src="../assets/beach/Sand_castle.glb"
+        ></a-asset-item>
+        <a-asset-item id="crab" src="../assets/beach/Crab.glb"></a-asset-item>
+        <a-asset-item
+          id="beachBall"
+          src="../assets/beach/beach_ball.glb"
+        ></a-asset-item>
       </a-assets>
 
       <a-sky color="#87CEEB"></a-sky>
@@ -192,6 +214,36 @@
         createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, "lying");
         createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
         createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
+
+        // Add a Beach Bar in the background
+        const bar = document.createElement("a-entity");
+        bar.setAttribute("gltf-model", "#beachBar");
+        bar.setAttribute("position", "15 -0.5 -15"); // Adjust position to be visible but out of the way
+        bar.setAttribute("scale", "3 3 3");
+        bar.setAttribute("rotation", "0 -45 0");
+        bar.setAttribute("static-body", "");
+        document.querySelector("a-scene").appendChild(bar);
+
+        // Scatter decorations (Umbrellas, Castles, Crabs)
+        const decorateBeach = (modelId, count, scale, yPos) => {
+          for (let i = 0; i < count; i++) {
+            const el = document.createElement("a-entity");
+            el.setAttribute("gltf-model", modelId);
+            // Random position outside the immediate play area
+            const x = (Math.random() - 0.5) * 50;
+            const z = (Math.random() - 0.5) * 50;
+            el.setAttribute("position", `${x} ${yPos} ${z}`);
+            el.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            el.setAttribute("static-body", "");
+            document.querySelector("a-scene").appendChild(el);
+          }
+        };
+
+        decorateBeach("#castle", 3, 0.05, -0.5); // Sand castles
+        decorateBeach("#crab", 8, 0.5, 0); // Crabs walking around
+        decorateBeach("#surfboard", 3, 0.1, -0.5); // Surfboards (stuck in sand)
+        decorateBeach("#beachBall", 4, 0.01, 0.5); // Beach balls
       </script>
     </a-scene>
   </body>

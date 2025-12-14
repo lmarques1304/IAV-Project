@@ -29,36 +29,45 @@
    
   <body oncontextmenu="return false">
        
-    <a-scene physics="gravity: -9.8; debug: false">
+    <a-scene
+      physics="gravity: -9.8; debug: false"
+      fog="type: exponential; color: #584c42; density: 0.03;"
+    >
            
       <a-assets>
-               
+        <a-asset-item
+          id="decorWasher"
+          src="../assets/eletronic-trash/washing_machine.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorPipes"
+          src="../assets/metal-trash/industrial_pipes.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorFence"
+          src="../assets/metal-trash/rusty_fence.glb"
+        ></a-asset-item>
         <a-asset-item
           id="metalItem1"
           src="../assets/metal-trash/screw.glb"
         ></a-asset-item>
-               
         <a-asset-item
           id="metalItem2"
           src="../assets/metal-trash/old_metal_cup.glb"
         ></a-asset-item>
-               
         <a-asset-item
           id="binModel"
           src="../assets/metal-trash/trash_can.glb"
         ></a-asset-item>
 
-               
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
-               
-        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>    
-         
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
       </a-assets>
-                 
+
       <a-entity
         id="next-island-portal"
         position="0 1 -15"
@@ -227,6 +236,41 @@
 
         createMetalTrash("#metalItem1", 50, "0.09 0.09 0.09", -0.4, "lying"); // Latas/Copos de metal (scale ajustado para 0.015 0.015 0.015)
         createMetalTrash("#metalItem2", 30, "0.015 0.015 0.015", -0.4, "lying");
+
+        const createJunkPiles = () => {
+          const scene = document.querySelector("a-scene");
+          const models = ["#decorWasher", "#decorPipes", "#decorFence"];
+
+          for (let i = 0; i < 20; i++) {
+            const pile = document.createElement("a-entity");
+            const chosenModel =
+              models[Math.floor(Math.random() * models.length)];
+
+            const x = (Math.random() - 0.5) * 50;
+            const z = (Math.random() - 0.5) * 50;
+            // Keep center clear for player
+            if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
+
+            pile.setAttribute("gltf-model", chosenModel);
+            if (chosenModel === "#decorFence") {
+              pile.setAttribute("position", `${x} -0.5 ${z}`);
+            } else {
+              pile.setAttribute("position", `${x} 0 ${z}`);
+            }
+
+            // Random rotation and scale to look like junk
+            pile.setAttribute(
+              "rotation",
+              `${Math.random() * 30} ${Math.random() * 360} ${
+                Math.random() * 30
+              }`
+            );
+            pile.setAttribute("scale", "0.8 0.8 0.8");
+            pile.setAttribute("static-body", "");
+            scene.appendChild(pile);
+          }
+        };
+        createJunkPiles();
       </script>
          
     </a-scene>
