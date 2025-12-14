@@ -9,59 +9,54 @@ AFRAME.registerComponent("random-spawner", {
     yPos: { type: "number", default: 0 },
     rotationType: { type: "string", default: "randomY" },
     isGrabbable: { type: "boolean", default: false },
-    physics: { type: "string", default: "none" },
   },
 
   init: function () {
-    const fragment = document.createDocumentFragment();
+    // Helper to create objects
+    const createObject = () => {
+      const el = document.createElement("a-entity");
 
-    for (let i = 0; i < this.data.count; i++) {
-      // 1. Create PARENT (Physics Body & Hitbox)
-      const container = document.createElement("a-entity");
-
+      // 1. Position & Scale
       const x = (Math.random() - 0.5) * this.data.areaSize;
       const z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
+      el.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
+      el.setAttribute("scale", this.data.scale);
 
-      container.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
-
+      // 2. Rotation
       if (this.data.rotationType === "lying") {
-        container.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+        el.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
       } else {
-        container.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+        el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
       }
 
-      // 2. HITBOX: Smaller (0.25) so items don't overlap easily.
-      // visible: false -> Invisible until debugged or hovered.
-      container.setAttribute("geometry", "primitive: box; width: 0.25; height: 0.25; depth: 0.25");
-      container.setAttribute("material", "visible: false"); 
-
-      if (this.data.isGrabbable) {
-        container.classList.add("grabbable");
-      }
-
-      // 3. PHYSICS
-      if (this.data.physics !== "none") {
-        if (this.data.physics === "dynamic") {
-           // 'shape: hull' tries to match the model, but 'shape: box' is more stable for grabbing.
-           // slightly larger mass makes it less jittery.
-           container.setAttribute("dynamic-body", "mass: 5; shape: box");
-        } else {
-           container.setAttribute("static-body", "shape: box");
-        }
-      }
-
-      // 4. CHILD (Visual Model)
+      // 3. Model
       if (this.data.model) {
-        const modelEl = document.createElement("a-entity");
-        modelEl.setAttribute("gltf-model", this.data.model);
-        modelEl.setAttribute("scale", this.data.scale);
-        modelEl.setAttribute("position", "0 0 0");
-        container.appendChild(modelEl);
+        el.setAttribute("gltf-model", this.data.model);
       }
 
-      fragment.appendChild(container);
-    }
+      // 4. Hitbox (CRITICAL)
+      // We add an invisible box so the physics engine and your hand have a simple shape to detect.
+      // Without this, the raycaster tries to hit the complex mesh and fails.
+      el.setAttribute("geometry", "primitive: box; width: 0.5; height: 0.5; depth: 0.5");
+      el.setAttribute("material", "visible: false");
 
+      // 5. Grabbable & Physics State
+      if (this.data.isGrabbable) {
+        el.classList.add("grabbable");
+
+        // Spawn as STATIC (Asleep). This prevents them from jittering/exploding on load.
+        // The grab script will wake them up later.
+        el.setAttribute("static-body", "shape: box"); 
+      }
+
+      return el;
+    };
+
+    // Create fragment for performance
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < this.data.count; i++) {
+      fragment.appendChild(createObject());
+    }
     this.el.sceneEl.appendChild(fragment);
   },
 });
