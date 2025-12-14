@@ -2,43 +2,299 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Recycle Islands VR - Electonic Island</title>
+    <title>Recycle Islands VR - Electronic Island</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
     <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
   </head>
 
   <body>
-    <a-scene>
+    <a-scene physics="gravity: -9.8; debug: false">
+      <a-assets>
+        <a-asset-item
+          id="building1"
+          src="../assets/city/Apartment_building.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building2"
+          src="../assets/city/Big_Building.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building3"
+          src="../assets/city/Building_1.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building4"
+          src="../assets/city/Building.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building5"
+          src="../assets/city/Large_Building_1.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building6"
+          src="../assets/city/Large_Building_2.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building7"
+          src="../assets/city/Large_Building_3.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building8"
+          src="../assets/city/Skyscraper_1.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="building9"
+          src="../assets/city/Small_Building.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="car"
+          src="../assets/city/Stationwagon.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="car1"
+          src="../assets/city/Car.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="car2"
+          src="../assets/city/Red_Car.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="car3"
+          src="../assets/city/Sports_Car.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="car4"
+          src="../assets/city/SUV.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="item1"
+          src="../assets/city/Street_lamp.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="item2"
+          src="../assets/city/Traffic_Light.glb"
+        ></a-asset-item>
 
-      <a-sky></a-sky>
+        <a-asset-item
+          id="electronicItem1"
+          src="../assets/electronic/arduino.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="electronicItem2"
+          src="../assets/electronic/Electronics_Collectable.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="electronicItem3"
+          src="../assets/electronic/Microchip.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="electronicItem4"
+          src="../assets/electronic/Phone.glb"
+        ></a-asset-item>
 
-      <a-entity id="defaultLight"></a-entity>
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+        <a-asset-item
+          id="binModel"
+          src="../assets/bins/glass-bin.glb"
+        ></a-asset-item>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 2" wasd-controls="acceleration: 20">
-        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+        <audio
+          id="background-music"
+          src="../assets/sounds/background-music.wav"
+          preload="auto"
+        ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
 
-        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+      <a-sky color="#87CEEB"></a-sky>
 
-        <a-entity id="leftLaser" 
-                  laser-controls="hand: left"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+      <a-light
+        type="point"
+        color="#ffdca8"
+        intensity="2"
+        distance="500"
+        position="0 20 0"
+      ></a-light>
+
+      <!-- PLAYER -->
+      <a-entity id="player" movement-controls="fly: false; speed: 0.2">
+        <a-camera position="0 0.5 0">
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.1 positional: false"
+          ></a-entity>
+        </a-camera>
+
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
         </a-entity>
 
-        <a-entity id="rightLaser" 
-                  laser-controls="hand: right"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
         </a-entity>
-
       </a-entity>
 
-      <a-plane class="ground"
-               rotation="-90 0 0">
+      <!-- BIN AND COUNTER -->
+      <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
+      </a-entity>
+
+      <a-entity
+        id="bin"
+        gltf-model="#binModel"
+        position="0 -0.5 -5"
+        static-body
+        delete-on-contact
+      >
+      </a-entity>
+
+      <a-entity
+        sound="src: #bin-sound; volume: 1 positional: false"
+        id="garbage-throw-sound"
+      ></a-entity>
+
+      <!-- ISLAND -->
+
+      <a-plane
+        class="ground"
+        position="0 -1 0"
+        rotation="-90 0 0"
+        width="300"
+        height="300"
+        color="#1e1e1e"
+        static-body>
       </a-plane>
 
+      <a-entity
+        gltf-model="#building1"
+        scale="1 1 1"
+        position="13 -1 -9"
+        rotation="0 0 0">
+      </a-entity>
+      <a-entity
+        gltf-model="#building1"
+        scale="1 1 1"
+        position="23 -1 -9"
+        rotation="0 0 0">
+      </a-entity>
+      <a-entity
+        gltf-model="#building1"
+        scale="1 1 1"
+        position="33 -1 -9"
+        rotation="0 0 0">
+      </a-entity>
+
+
+
+
+
+
+
+
+      <script>
+        const roadY = -0.99;
+
+        const createRoad = (x, z, width, height, rotation = 0) => {
+          const road = document.createElement("a-plane");
+          road.setAttribute("width", width);
+          road.setAttribute("height", height);
+          road.setAttribute("rotation", `-90 ${rotation} 0`);
+          road.setAttribute("position", `${x} ${roadY} ${z}`);
+          road.setAttribute("color", "#2b2b2b");
+          road.setAttribute("static-body");
+
+          document.querySelector("a-scene").appendChild(road);
+        };
+        // cruz central
+        createRoad(0, 0, 300, 14, 0);
+        createRoad(0, 0, 300, 14, 90);
+      </script>
+
+      <script>
+        const lineY = -0.98;
+        const createDashedLine = (x, z, totalLength, dashLength, gap, rotation = 0) => {
+          const count = Math.floor(totalLength / (dashLength + gap));
+
+          for (let i = 0; i < count; i++) {
+            const dash = document.createElement("a-plane");
+            dash.setAttribute("width", dashLength);
+            dash.setAttribute("height", 0.4);
+            dash.setAttribute("rotation", `-90 ${rotation} 0`);
+            dash.setAttribute("color", "#ffffff");
+            const offset = -totalLength / 2 + i * (dashLength + gap) + dashLength / 2;
+            const posX = rotation === 0 ? offset : x;
+            const posZ = rotation === 0 ? z : offset;
+            dash.setAttribute("position", `${posX} ${lineY} ${posZ}`);
+            dash.setAttribute("static-body");
+            document.querySelector("a-scene").appendChild(dash);
+          }
+        };
+        // estrada horizontal
+        createDashedLine(0, 0, 300, 4, 4, 0);
+
+        // estrada vertical
+        createDashedLine(0, 0, 300, 4, 4, 90);
+      </script>
+
+      <script>
+        const sandWidth = 50;
+        const sandHeight = 50;
+        const sandOffsetZ = 0;
+
+        const createElectronic = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const plastic = document.createElement("a-entity");
+            plastic.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            plastic.setAttribute("position", `${x} ${yPos} ${z}`);
+            plastic.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            // CRITICAL: Must have 'grabbable' class
+            plastic.setAttribute("class", "grabbable");
+
+            // Physics
+            plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+
+            document.querySelector("a-scene").appendChild(plastic);
+          }
+        };
+
+        createElectronic("#electronicItem1", 55, "0.2 0.2 0.2", -0.4, "random");
+        createElectronic("#electronicItem2", 70, "0.05 0.05 0.05", -0.4, "random");
+        createElectronic("#electronicItem3", 10, "0.05 0.05 0.05", -0.2, "random");
+        createElectronic("#electronicItem4", 10, "0.3 0.3 0.3", -0.2, "random");
+      </script>
     </a-scene>
   </body>
 </html>
