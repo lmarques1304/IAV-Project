@@ -7,9 +7,9 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-    <script src="../js/island.js"></script>
-    <script src="../js/simple-grab.js"></script>
-    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/island.js" defer></script>
+    <script src="../js/simple-grab.js" defer></script>
+    <script src="../js/delete-on-contact.js" defer></script>
     <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
     <script src="../js/random-spawner.js" defer></script>
   </head>
@@ -75,9 +75,8 @@
           event-set__hoveron="material.color: #FFFFFF"
           event-set__hoveroff="material.color: #00FF00"
         >
-                 
         </a-sphere>
-               
+
         <a-text
           value="IR PARA ILHA ORGÂNICA"
           align="center"
@@ -86,11 +85,10 @@
           rotation="0 0 0"
           width="5"
         ></a-text>
-             
       </a-entity>
-            <a-sky color="#586f7c"></a-sky>
 
-           
+      <a-sky color="#586f7c"></a-sky>
+
       <a-light
         type="point"
         color="#ffffff"
@@ -99,7 +97,6 @@
         position="0 20 0"
       ></a-light>
 
-           
       <a-entity id="player" movement-controls="fly: false; speed: 0.2">
         <a-camera position="0 0.5 0">
           <a-entity
@@ -124,9 +121,7 @@
         </a-entity>
       </a-entity>
 
-           
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
-               
         <a-plane
           color="#000000"
           opacity="0.5"
@@ -134,16 +129,13 @@
           height="0.5"
           position="0 0 -0.1"
         ></a-plane>
-               
         <a-entity
           id="counter"
           text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
           position="0 0 0"
         ></a-entity>
-             
       </a-entity>
 
-           
       <a-entity
         id="bin"
         gltf-model="#binModel"
@@ -152,16 +144,13 @@
         static-body
         delete-on-contact
       >
-             
       </a-entity>
 
-           
       <a-entity
         sound="src: #bin-sound; volume: 1.4 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
-           
       <a-box
         class="ground"
         position="0 -1 0"
@@ -171,7 +160,6 @@
         repeat="60 60"
         static-body
       >
-             
       </a-box>
 
       <a-plane
