@@ -1,44 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Recycle Islands VR - Electonic Island</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
-    <script src="../js/island.js"></script>
-  </head>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Recycle Islands VR - Electronic Island</title>
+    
+        <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-  <body>
-    <a-scene>
+        <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
+    <script src="../js/navigate-on-click.js"></script>
+  </head>
 
-      <a-sky></a-sky>
+  <body oncontextmenu="return false">
+    
+        <a-scene physics="gravity: -9.8; debug: false">
 
-      <a-entity id="defaultLight"></a-entity>
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+      <a-assets>
+                <a-asset-item
+          id="eWasteItem1"
+          src="../assets/eletronic-trash/broken_smartphone_glb__fbx__textures.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="eWasteItem2"
+          src="../assets/eletronic-trash/flashlight.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="eWasteItem3"
+          src="../assets/eletronic-trash/cc0_set_of_electronic_components.glb"
+        ></a-asset-item>
+                <a-asset-item
+          id="binModel"
+          src="../assets/eletronic-trash/washing_machine.glb"
+        ></a-asset-item>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 2" wasd-controls="acceleration: 20">
-        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+        <audio
+          id="background-music"
+          src="../assets/sounds/background-music.wav"
+          preload="auto"
+        ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
+      
+            <a-entity
+        id="next-island-portal"
+        position="0 1 -15" 
+        rotation="0 0 0" 
+        scale="0 0 0"              visible="false"
+        class="clickable"
+        navigate-on-click="url: plastic.html" >
+        <a-sphere 
+          radius="1" 
+          color="#FF00FF"         opacity="0.7"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
+          event-set__hoveron="material.color: #FFFFFF"
+          event-set__hoveroff="material.color: #FF00FF" 
+        >
+        </a-sphere>
+        <a-text 
+          value="IR PARA ILHA PLÁSTICA" 
+          align="center" 
+          color="#000000" 
+          position="0 0 1.1" 
+          rotation="0 0 0"
+          width="5"
+        ></a-text>
+      </a-entity>
+      
+            <a-sky color="#1F2F3D"></a-sky>       <a-light
+        type="point"
+        color="#ffffff"
+        intensity="1"
+        distance="500"
+        position="0 20 0"
+      ></a-light>
 
-        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+            <a-entity id="rig" movement-controls="fly: false; speed: 0.2">
+        <a-camera position="0 0.5 0">
+          
+          <a-entity 
+            cursor="rayOrigin: mouse"
+            raycaster="objects: .clickable, .grabbable" 
+            geometry="primitive: ring; radiusOuter: 0.012; radiusInner: 0.008; segments-closed: true"
+            material="color: white; shader: flat"
+            position="0 0 -1"
+          >
+          </a-entity>
+          
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.1 positional: false"
+          ></a-entity>
+        </a-camera>
 
-        <a-entity id="leftLaser" 
-                  laser-controls="hand: left"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
+        </a-entity>
 
-        <a-entity id="rightLaser" 
-                  laser-controls="hand: right"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
+        </a-entity>
+      </a-entity>
+      
+            <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/50; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
+      </a-entity>
 
-      </a-entity>
+            <a-entity
+        id="bin"
+        gltf-model="#binModel"
+        position="0 0.5 -5" 
+        scale="1 1 1" 
+        static-body
+        delete-on-contact
+      >
+      </a-entity>
 
-      <a-plane class="ground"
-               rotation="-90 0 0">
-      </a-plane>
+      <a-entity
+        sound="src: #bin-sound; volume: 1 positional: false"
+        id="garbage-throw-sound"
+      ></a-entity>
 
-    </a-scene>
-  </body>
+            <a-box
+        class="ground"
+        position="0 -1 0"
+        scale="60 60 1"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Concrete035_1K-JPG/Concrete035_1K-JPG_Color.jpg"
+        repeat="60 60"
+        static-body
+      >
+      </a-box>
+
+            <a-plane
+        id="ocean"
+        position="0 -1.1 0"
+        width="1000"
+        height="1000"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
+        repeat="1000 1000"
+        static-body
+      >
+      </a-plane>
+
+      <script>
+        const sandWidth = 55;
+        const sandHeight = 55;
+        const sandOffsetZ = 0;
+
+        // Função genérica para criar lixo na ilha
+        const createTrash = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const trash = document.createElement("a-entity");
+            trash.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            trash.setAttribute("position", `${x} ${yPos} ${z}`);
+            trash.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            trash.setAttribute("class", "grabbable");
+            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
+
+            document.querySelector("a-scene").appendChild(trash);
+          }
+        };
+
+        // Geração dos 3 Tipos de Lixo Eletrónico
+        
+        // Item 1: Celulares antigos (Pequeno)
+        createTrash("#eWasteItem1", 25, "0.4 0.4 0.4", -0.4, "lying");
+        
+        // Item 2: Monitores/Equipamento grande (Grande)
+        createTrash("#eWasteItem2", 10, "0.01 0.01 0.01", -0.4, "random"); 
+
+        // Item 3: Baterias/Pequenos componentes (Muito Pequeno)
+        createTrash("#eWasteItem3", 15, "5 5 5", 0, "lying"); 
+      </script>
+    </a-scene>
+  </body>
 </html>
