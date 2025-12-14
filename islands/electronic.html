@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-   
   <head>
-       
     <meta charset="UTF-8" />
-       
     <title>Recycle Islands VR - Electronic Island</title>
-               
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-       
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-       
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
-    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -190,11 +183,9 @@
         repeat="1000 1000"
         static-body
       >
-             
       </a-plane>
 
-           
-      <script>
+      <script defer>
         const sandWidth = 55;
         const sandHeight = 55;
         const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
@@ -262,7 +253,7 @@
         };
         createCyberEnvironment();
       </script>
-         
+      <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
     </a-scene>
      
   </body>
