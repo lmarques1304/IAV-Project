@@ -11,6 +11,7 @@
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
     <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -187,75 +188,22 @@
       >
       </a-plane>
 
-      <script>
-        const sandWidth = 55;
-        const sandHeight = 55;
-        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
+      <a-entity
+        random-spawner="model: #decorRack; count: 10; scale: 3 3 3; areaSize: 45; yPos: -0.5; physics: static"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #decorCrate; count: 10; scale: 0.01 0.01 0.01; areaSize: 45; yPos: -0.5; physics: static"
+      ></a-entity>
 
-        const createTrash = (modelId, count, scale, yPos, rotationType) => {
-          for (let i = 0; i < count; i++) {
-            const trash = document.createElement("a-entity");
-            trash.setAttribute("gltf-model", modelId);
-
-            const x = Math.random() * sandWidth - sandWidth / 2;
-            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
-            trash.setAttribute("position", `${x} ${yPos} ${z}`);
-            trash.setAttribute("scale", scale);
-
-            if (rotationType === "random") {
-              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            } else if (rotationType === "lying") {
-              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
-            }
-
-            trash.setAttribute("class", "grabbable");
-            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
-
-            document.querySelector("a-scene").appendChild(trash);
-          }
-        }; // Geração dos 3 Tipos de Lixo Eletrónico // Item 1: Celulares antigos (Pequeno)
-
-        createTrash("#eWasteItem1", 25, "0.6 0.8 0.6", 0.2, "lying"); // Item 2: Monitores/Equipamento grande (Grande)
-        createTrash("#eWasteItem2", 10, "0.02 0.02 0.02", 0.1, "random"); // Item 3: Baterias/Pequenos componentes (Muito Pequeno)
-        createTrash("#eWasteItem3", 15, "8 8 8", 0.2, "lying");
-
-        const createCyberEnvironment = () => {
-          const scene = document.querySelector("a-scene");
-          const models = ["#decorRack", "#decorCrate"];
-
-          for (let i = 0; i < 20; i++) {
-            const pile = document.createElement("a-entity");
-            const chosenModel =
-              models[Math.floor(Math.random() * models.length)];
-
-            const x = (Math.random() - 0.5) * 50;
-            const z = (Math.random() - 0.5) * 50;
-            // Keep center clear for player
-            if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
-
-            pile.setAttribute("gltf-model", chosenModel);
-            pile.setAttribute("position", `${x} -0.5 ${z}`);
-
-            // Random rotation and scale to look like junk
-            pile.setAttribute(
-              "rotation",
-              `${Math.random() * 30} ${Math.random() * 360} ${
-                Math.random() * 30
-              }`
-            );
-
-            if (chosenModel === "#decorCrate") {
-              pile.setAttribute("scale", "0.01 0.01 0.01");
-            } else {
-              pile.setAttribute("scale", "3 3 3");
-            }
-            pile.setAttribute("static-body", "");
-            scene.appendChild(pile);
-          }
-        };
-        createCyberEnvironment();
-      </script>
+      <a-entity
+        random-spawner="model: #eWasteItem1; count: 25; scale: 0.6 0.8 0.6; yPos: 0.2; rotationType: lying; isGrabbable: true; physics: dynamic"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #eWasteItem2; count: 10; scale: 0.02 0.02 0.02; yPos: 0.1; rotationType: random; isGrabbable: true; physics: dynamic"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #eWasteItem3; count: 15; scale: 8 8 8; yPos: 0.2; rotationType: lying; isGrabbable: true; physics: dynamic"
+      ></a-entity>
     </a-scene>
-     
   </body>
 </html>

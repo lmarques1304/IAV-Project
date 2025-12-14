@@ -12,6 +12,7 @@
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
     <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -150,97 +151,25 @@
       >
       </a-plane>
 
-      <script>
-        const sandWidth = 55;
-        const sandHeight = 55;
-        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
+      <a-entity
+        random-spawner="model: #decorTree; count: 15; scale: 2.5 2.5 2.5; areaSize: 45; yPos: 10; physics: static"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #decorBench; count: 3; scale: 1.5 1.5 1.5; areaSize: 45; yPos: 0.2; physics: static"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #decorRocks; count: 10; scale: 1 1 1; areaSize: 45; yPos: 0; physics: static"
+      ></a-entity>
 
-        const createTrash = (modelId, count, scale, yPos, rotationType) => {
-          for (let i = 0; i < count; i++) {
-            const trash = document.createElement("a-entity");
-            trash.setAttribute("gltf-model", modelId);
-
-            const x = Math.random() * sandWidth - sandWidth / 2;
-            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
-            trash.setAttribute("position", `${x} ${yPos} ${z}`);
-            trash.setAttribute("scale", scale);
-
-            if (rotationType === "random") {
-              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            } else if (rotationType === "lying") {
-              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
-            }
-
-            trash.setAttribute("class", "grabbable");
-            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
-
-            document.querySelector("a-scene").appendChild(trash);
-          }
-        }; // Garrafas de Vidro (#glassItem1): Reduzidas (0.1) e Y ajustado (-0.4)
-
-        createTrash("#glassItem1", 20, "0.2 0.2 0.2", -0.4, "random"); // Lupas (#glassItem2): Aumentadas (0.5) e Y ajustado (-0.4)
-        createTrash("#glassItem2", 15, "30 30 30", 2, "lying"); // Copos de Vidro (#glassItem3): Aumentados (0.3) e Y ajustado (-0.2)
-        createTrash("#glassItem3", 15, "0.15 0.15 0.15", 0.5, "random");
-
-        const createDecorations = () => {
-          const scene = document.querySelector("a-scene");
-
-          // 1. Create a ring of Trees
-          for (let i = 0; i < 15; i++) {
-            const tree = document.createElement("a-entity");
-            tree.setAttribute("gltf-model", "#decorTree");
-
-            // Position trees in a circle (radius 15-25) to make a clearing
-            const angle = (i / 15) * Math.PI * 2;
-            const radius = 20 + Math.random() * 10;
-            const x = Math.cos(angle) * radius;
-            const z = Math.sin(angle) * radius;
-
-            tree.setAttribute("position", `${x} 10 ${z}`); // Slightly sunk to blend
-            tree.setAttribute("scale", "3 3 3"); // Adjust scale based on your model size
-            tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            tree.setAttribute("static-body", ""); // Trees are solid
-            scene.appendChild(tree);
-          }
-
-          // 2. Add Benches (Park seating)
-          const benchPositions = [
-            { x: 5, z: 5, rot: -45 },
-            { x: -5, z: 8, rot: 45 },
-            { x: 6, z: -4, rot: -135 },
-          ];
-
-          benchPositions.forEach((pos) => {
-            const bench = document.createElement("a-entity");
-            bench.setAttribute("gltf-model", "#decorBench");
-            bench.setAttribute("position", `${pos.x} 0.2 ${pos.z}`);
-            bench.setAttribute("rotation", `0 ${pos.rot} 0`);
-            bench.setAttribute("scale", "1.5 1.5 1.5");
-            bench.setAttribute("static-body", "");
-            scene.appendChild(bench);
-          });
-
-          // 3. Scatter Rocks
-          for (let i = 0; i < 10; i++) {
-            const rock = document.createElement("a-entity");
-            rock.setAttribute("gltf-model", "#decorRocks");
-            const x = (Math.random() - 0.5) * 40;
-            const z = (Math.random() - 0.5) * 40;
-            if (Math.abs(x) < 3 && Math.abs(z) < 3) continue; // Keep center clear
-
-            rock.setAttribute("position", `${x} 0 ${z}`);
-            rock.setAttribute(
-              "scale",
-              `${1 + Math.random()} ${1 + Math.random()} ${1 + Math.random()}`
-            );
-            rock.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            rock.setAttribute("static-body", "");
-            scene.appendChild(rock);
-          }
-        };
-
-        createDecorations();
-      </script>
+      <a-entity
+        random-spawner="model: #glassItem1; count: 20; scale: 0.2 0.2 0.2; yPos: -0.4; rotationType: random; isGrabbable: true; physics: dynamic"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #glassItem2; count: 20; scale: 1 1 1; yPos: 2; rotationType: random; isGrabbable: true; physics: dynamic"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #glassItem3; count: 15; scale: 0.15 0.15 0.15; yPos: 0.5; rotationType: random; isGrabbable: true; physics: dynamic"
+      ></a-entity>
     </a-scene>
   </body>
 </html>
