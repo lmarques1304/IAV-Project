@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-    <script src="../js/custom-grabbable.js"></script>
     <script src="../js/teleport-on-contact.js"></script>
 
     <script>
@@ -35,7 +34,7 @@
           padding: { type: "number", default: 0.2 },
           wallHeight: { type: "number", default: 3 },
           wallThickness: { type: "number", default: 0.2 },
-          playerYOffset: { type: "number", default: 0.2 },
+          playerYOffset: { type: "number", default: 1.8 },
         },
         init: function () {
           const island = this.el;
@@ -108,33 +107,14 @@
               );
               const dyn = player.getAttribute("dynamic-body");
               if (dyn && player.body) {
-                player.object3D.position.set(
+                player.body.position.set(
                   center.x,
                   topY + this.data.playerYOffset,
                   center.z
                 );
-                if (player.body && player.body.position) {
-                  player.body.position.set(
-                    center.x,
-                    topY + this.data.playerYOffset,
-                    center.z
-                  );
-                  player.body.velocity.set(0, 0, 0);
-                }
+                player.body.velocity.set(0, 0, 0);
               }
             }
-          });
-        },
-      });
-
-      // ✨ Componente para teletransportar ao clicar
-      AFRAME.registerComponent("teleport-on-click", {
-        schema: {
-          targetUrl: { type: "string" },
-        },
-        init: function () {
-          this.el.addEventListener("click", () => {
-            window.location.href = this.data.targetUrl;
           });
         },
       });
@@ -163,12 +143,17 @@
         rotation="0 0 0"
         static-body="shape: concave"
         floating
-        create-island-walls="playerYOffset: -75"
+        create-island-walls="playerYOffset: 1.8"
       >
       </a-entity>
 
       <!-- 🎮 Jogador -->
-      <a-entity id="player" movement-controls="fly: false; speed: 1" dynamic-body="shape: box; mass: 5">
+      <a-entity
+        id="player"
+        movement-controls="fly: false; speed: 1"
+        dynamic-body="shape: box; mass: 5"
+        teleport-on-contact="targetElement: #magicSphere; targetUrl: plastic.html"
+      >
         <a-camera position="0 1.6 0"> </a-camera>
         <a-entity
           id="left-hand"
@@ -188,7 +173,6 @@
         position="14 180 15"
         floating="amplitude: 0.1; speed: 2"
         static-body="shape: sphere; sphereRadius: 10; isTrigger: true"
-        teleport-on-contact="targetUrl: plastic.html"
         class="clickable"
       >
         <a-sphere
