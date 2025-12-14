@@ -54,7 +54,7 @@ AFRAME.registerComponent("random-spawner", {
         const addPhysics = () => {
           if (this.data.physics === "dynamic") {
             // "hull" is often more accurate than "auto" for trash items
-            el.setAttribute("dynamic-body", "mass: 0.2; shape: hull");
+            el.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
           } else if (this.data.physics === "static") {
             el.setAttribute("static-body", "shape: hull");
           }
