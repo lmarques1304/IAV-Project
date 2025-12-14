@@ -95,7 +95,7 @@
         ></a-text>
              
       </a-entity>
-                        <a-sky color="#1F2F3D"></a-sky>      
+      <a-sky color="#1F2F3D"></a-sky>
       <a-light
         type="point"
         color="#ffffff"
@@ -151,6 +151,7 @@
         gltf-model="#binModel"
         position="0 0.5 -5"
         scale="1 1 1"
+        rotation="0 90 0"
         static-body
         delete-on-contact
       >
@@ -219,10 +220,10 @@
           }
         }; // Geração dos 3 Tipos de Lixo Eletrónico // Item 1: Celulares antigos (Pequeno)
 
-        createTrash("#eWasteItem1", 25, "0.4 0.4 0.4", -0.4, "lying"); // Item 2: Monitores/Equipamento grande (Grande)
-        createTrash("#eWasteItem2", 10, "0.01 0.01 0.01", -0.4, "random"); // Item 3: Baterias/Pequenos componentes (Muito Pequeno)
+        createTrash("#eWasteItem1", 25, "0.6 0.6 0.6", -0.4, "lying"); // Item 2: Monitores/Equipamento grande (Grande)
+        createTrash("#eWasteItem2", 10, "0.02 0.02 0.02", -0.4, "random"); // Item 3: Baterias/Pequenos componentes (Muito Pequeno)
 
-        createTrash("#eWasteItem3", 15, "5 5 5", 0, "lying");
+        createTrash("#eWasteItem3", 15, "8 8 8", 0, "lying");
       </script>
          
     </a-scene>

@@ -1,73 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-   
   <head>
-       
     <meta charset="UTF-8" />
-       
     <title>Recycle Islands VR - Glass Island</title>
-           
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-       
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-       
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-           
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
     <script src="../js/island.js"></script>
-       
     <script src="../js/simple-grab.js"></script>
-       
     <script src="../js/delete-on-contact.js"></script>
-       
     <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
-       
     <script src="../js/navigate-on-click.js"></script>
-     
   </head>
 
-   
   <body oncontextmenu="return false">
-           
     <a-scene physics="gravity: -9.8; debug: false">
-           
       <a-assets>
-                       
         <a-asset-item
           id="glassItem1"
           src="../assets/glass-trash/glass_bottle.glb"
         ></a-asset-item>
-               
+
         <a-asset-item
           id="glassItem2"
           src="../assets/glass-trash/magnifying_glass.glb"
         ></a-asset-item>
-               
+
         <a-asset-item
           id="glassItem3"
           src="../assets/glass-trash/simple_glass_cup.glb"
         ></a-asset-item>
-                       
+
         <a-asset-item
           id="binModel"
           src="../assets/glass-trash/glass_jar.glb"
         ></a-asset-item>
 
-               
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
-               
-        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>    
-         
+
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
       </a-assets>
 
-                  <a-entity id="defaultLight"></a-entity>      
+      <a-entity id="defaultLight"></a-entity>
       <a-entity id="sunLight" position="1 1 0"></a-entity>
+      <a-sky color="#87CEEB"></a-sky>
 
-            <a-sky color="#87CEEB"></a-sky>      
       <a-light
         type="point"
         color="#ffffff"
@@ -76,41 +58,31 @@
         position="0 20 0"
       ></a-light>
 
-                 
       <a-entity id="rig" movement-controls="fly: false; speed: 0.2">
-               
         <a-camera position="0 0.5 0">
-                                                 
           <a-entity
             sound="src: #background-music; autoplay: true; loop: true; volume: 0.2 positional: false"
           ></a-entity>
-                 
         </a-camera>
 
-                       
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
-                 
         </a-entity>
 
-               
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
-                 
         </a-entity>
-             
       </a-entity>
-                       
+
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
-               
         <a-plane
           color="#000000"
           opacity="0.5"
@@ -118,16 +90,14 @@
           height="0.5"
           position="0 0 -0.1"
         ></a-plane>
-               
+
         <a-entity
           id="counter"
           text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
           position="0 0 0"
         ></a-entity>
-             
       </a-entity>
 
-                 
       <a-entity
         id="bin"
         gltf-model="#binModel"
@@ -136,16 +106,13 @@
         static-body
         delete-on-contact
       >
-             
       </a-entity>
 
-                 
       <a-entity
         sound="src: #bin-sound; volume: 1.4 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
-                 
       <a-box
         class="ground"
         position="0 -1 0"
