@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-    <script src="../js/teleport-on-contact.js"></script>
+    <script src="../js/custom-grabbable.js"></script>
 
     <script>
       // 🌊 Componente para flutuar a ilha suavemente
@@ -34,7 +34,7 @@
           padding: { type: "number", default: 0.2 },
           wallHeight: { type: "number", default: 3 },
           wallThickness: { type: "number", default: 0.2 },
-          playerYOffset: { type: "number", default: 1.8 },
+          playerYOffset: { type: "number", default: 0.2 },
         },
         init: function () {
           const island = this.el;
@@ -107,14 +107,33 @@
               );
               const dyn = player.getAttribute("dynamic-body");
               if (dyn && player.body) {
-                player.body.position.set(
+                player.object3D.position.set(
                   center.x,
                   topY + this.data.playerYOffset,
                   center.z
                 );
-                player.body.velocity.set(0, 0, 0);
+                if (player.body && player.body.position) {
+                  player.body.position.set(
+                    center.x,
+                    topY + this.data.playerYOffset,
+                    center.z
+                  );
+                  player.body.velocity.set(0, 0, 0);
+                }
               }
             }
+          });
+        },
+      });
+
+      // ✨ Componente para teletransportar ao clicar
+      AFRAME.registerComponent("teleport-on-click", {
+        schema: {
+          targetUrl: { type: "string" },
+        },
+        init: function () {
+          this.el.addEventListener("click", () => {
+            window.location.href = this.data.targetUrl;
           });
         },
       });
@@ -123,6 +142,7 @@
 
   <body>
     <a-scene physics="gravity: -9.8">
+
       <!-- 🌤️ Céu -->
       <a-sky src="island1sky.jpg" rotation="0 -90 0"></a-sky>
 
@@ -143,18 +163,28 @@
         rotation="0 0 0"
         static-body="shape: concave"
         floating
-        create-island-walls="playerYOffset: 1.8"
+        create-island-walls="playerYOffset: -75"
       >
       </a-entity>
 
       <!-- 🎮 Jogador -->
-      <a-entity
-        id="player"
-        movement-controls="fly: false; speed: 1"
-        dynamic-body="shape: box; mass: 5"
-        teleport-on-contact="targetElement: #magicSphere; targetUrl: plastic.html"
-      >
-        <a-camera position="0 -80 0"> </a-camera>
+      <a-entity id="player" movement-controls="fly: false; speed: 1">
+        <a-camera position="0 1.6 0">
+          <!-- IMPORTANT - Remove <a-cursor> tag after development -->
+          <a-cursor color="blue"></a-cursor>
+        </a-camera>
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          raycaster="objects: .custom-grabbable"
+          cursor
+        ></a-entity>
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          raycaster="objects: .custom-grabbable"
+          cursor
+        ></a-entity>
       </a-entity>
 
       <!-- 🔮 Esfera flutuante com texto -->
@@ -162,7 +192,7 @@
         id="magicSphere"
         position="14 180 15"
         floating="amplitude: 0.1; speed: 2"
-        static-body="shape: sphere; sphereRadius: 10; isTrigger: true"
+        teleport-on-click="targetUrl: plastic.html"
         class="clickable"
       >
         <a-sphere
