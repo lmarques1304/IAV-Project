@@ -87,16 +87,16 @@
 
         <a-entity
           id="left-hand"
-          laser-controls="hand: left"
-          raycaster="objects: .grabbable; far: 1"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
         </a-entity>
 
         <a-entity
           id="right-hand"
-          laser-controls="hand: right"
-          raycaster="objects: .grabbable; far: 1"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
           simple-grab
         >
         </a-entity>
