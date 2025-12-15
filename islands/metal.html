@@ -179,7 +179,7 @@
       >
       </a-plane>
 
-      <a-entity
+      <!-- <a-entity
         random-spawner="model: #decorWasher; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
       ></a-entity>
       <a-entity
@@ -194,7 +194,80 @@
       ></a-entity>
       <a-entity
         random-spawner="model: #metalItem2; count: 30; scale: 0.015 0.05 0.015; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity>
+      ></a-entity> -->
+
+      <script>
+        const sandWidth = 55;
+        const sandHeight = 55;
+        const sandOffsetZ = 0;
+
+        const createMetalTrash = (
+          modelId,
+          count,
+          scale,
+          yPos,
+          rotationType
+        ) => {
+          for (let i = 0; i < count; i++) {
+            const trash = document.createElement("a-entity");
+            trash.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            trash.setAttribute("position", `${x} ${yPos} ${z}`);
+            trash.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            trash.setAttribute("class", "grabbable");
+            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
+
+            document.querySelector("a-scene").appendChild(trash);
+          }
+        }; // Parafusos (scale ajustado para 0.09 0.09 0.09)
+
+        createMetalTrash("#metalItem1", 40, "0.09 0.2 0.09", -0.4, "lying"); // Latas/Copos de metal (scale ajustado para 0.015 0.015 0.015)
+        createMetalTrash("#metalItem2", 30, "0.015 0.05 0.015", -0.4, "lying");
+
+        const createJunkPiles = () => {
+          const scene = document.querySelector("a-scene");
+          const models = ["#decorWasher", "#decorPipes", "#decorFence"];
+
+          for (let i = 0; i < 20; i++) {
+            const pile = document.createElement("a-entity");
+            const chosenModel =
+              models[Math.floor(Math.random() * models.length)];
+
+            const x = (Math.random() - 0.5) * 50;
+            const z = (Math.random() - 0.5) * 50;
+            // Keep center clear for player
+            if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
+
+            pile.setAttribute("gltf-model", chosenModel);
+            if (chosenModel === "#decorFence") {
+              pile.setAttribute("position", `${x} -0.5 ${z}`);
+            } else {
+              pile.setAttribute("position", `${x} 0 ${z}`);
+            }
+
+            // Random rotation and scale to look like junk
+            pile.setAttribute(
+              "rotation",
+              `${Math.random() * 30} ${Math.random() * 360} ${
+                Math.random() * 30
+              }`
+            );
+            pile.setAttribute("scale", "0.8 0.8 0.8");
+            pile.setAttribute("static-body", "");
+            scene.appendChild(pile);
+          }
+        };
+        createJunkPiles();
+      </script>
     </a-scene>
   </body>
 </html>
