@@ -71,12 +71,8 @@ AFRAME.registerComponent("simple-grab", {
       this.grabbedEl.setAttribute("material", "color", this.savedColor);
     }
 
-    // --- FIX STARTS HERE ---
-    // Remove BOTH physics types to prevent "Ghost Object" bugs.
-    // If we only remove dynamic-body, the static-body remains and anchors the object in place.
     this.grabbedEl.removeAttribute("dynamic-body");
     this.grabbedEl.removeAttribute("static-body");
-    // --- FIX ENDS HERE ---
 
     this.el.object3D.attach(this.grabbedEl.object3D);
   },
@@ -86,8 +82,7 @@ AFRAME.registerComponent("simple-grab", {
 
     this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
-    // Re-enable physics as dynamic
-    this.grabbedEl.setAttribute("dynamic-body", "mass: 1; shape: auto");
+    this.grabbedEl.setAttribute("dynamic-body", "mass: 1; shape: box");
 
     this.grabbedEl = null;
     this.hoveredEl = null;

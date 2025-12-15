@@ -42,6 +42,14 @@ AFRAME.registerComponent("random-spawner", {
         el.setAttribute("static-body", "shape: box");
       }
 
+      if (this.data.physics === "dynamic") {
+        el.setAttribute("dynamic-body", "shape: box; mass: 1");
+      } else if (this.data.physics === "static") {
+        el.setAttribute("static-body", "shape: box");
+      } else if (this.data.isGrabbable) {
+        el.setAttribute("dynamic-body", "shape: box; mass: 1");
+      }
+
       return el;
     };
 
