@@ -156,7 +156,7 @@
 
       <!-- DECORATIONS AND TRASH ITEMS -->
 
-      <a-entity
+      <!-- <a-entity
         random-spawner="model: #palmModel; count: 10; scale: 2 2 2; areaSize: 45; yPos: -0.5"
       ></a-entity>
       <a-entity
@@ -193,7 +193,95 @@
         scale="3 3 3"
         static-body
       >
-      </a-entity>
+      </a-entity> -->
+
+      <script>
+        const planeWidth = 45;
+        const planeHeight = 45;
+        const planeOffsetZ = 0;
+
+        const addTrees = (count, scale) => {
+          for (let i = 0; i < count; i++) {
+            const tree = document.createElement("a-entity");
+            tree.setAttribute("gltf-model", "#palmModel");
+            tree.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            const x = Math.random() * planeWidth - planeWidth / 2;
+            const z =
+              Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
+            tree.setAttribute("position", `${x} -0.5 ${z}`);
+            tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            document.querySelector("a-scene").appendChild(tree);
+          }
+        };
+
+        addTrees(10, 2);
+        addTrees(8, 2.5);
+        addTrees(6, 3.5);
+        addTrees(4, 4);
+      </script>
+      <script>
+        const sandWidth = 55;
+        const sandHeight = 55;
+        const sandOffsetZ = 0;
+
+        const createPlastic = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const plastic = document.createElement("a-entity");
+            plastic.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            plastic.setAttribute("position", `${x} ${yPos} ${z}`);
+            plastic.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            // CRITICAL: Must have 'grabbable' class
+            plastic.setAttribute("class", "grabbable");
+
+            // Physics
+            plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+
+            document.querySelector("a-scene").appendChild(plastic);
+          }
+        };
+
+        createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, "lying");
+        createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
+        createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
+
+        // Add a Beach Bar in the background
+        const bar = document.createElement("a-entity");
+        bar.setAttribute("gltf-model", "#beachBar");
+        bar.setAttribute("position", "15 -0.5 -15"); // Adjust position to be visible but out of the way
+        bar.setAttribute("scale", "3 3 3");
+        bar.setAttribute("rotation", "0 -45 0");
+        bar.setAttribute("static-body", "");
+        document.querySelector("a-scene").appendChild(bar);
+
+        // Scatter decorations (Umbrellas, Castles, Crabs)
+        const decorateBeach = (modelId, count, scale, yPos) => {
+          for (let i = 0; i < count; i++) {
+            const el = document.createElement("a-entity");
+            el.setAttribute("gltf-model", modelId);
+            // Random position outside the immediate play area
+            const x = (Math.random() - 0.5) * 50;
+            const z = (Math.random() - 0.5) * 50;
+            el.setAttribute("position", `${x} ${yPos} ${z}`);
+            el.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            el.setAttribute("static-body", "");
+            document.querySelector("a-scene").appendChild(el);
+          }
+        };
+
+        decorateBeach("#castle", 3, 0.05, -0.5); // Sand castles
+        decorateBeach("#surfboard", 3, 0.1, -0.5); // Surfboards (stuck in sand)
+      </script>
     </a-scene>
 
     <script src="../js/island.js" defer></script>
