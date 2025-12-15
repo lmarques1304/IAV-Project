@@ -9,7 +9,7 @@ AFRAME.registerComponent("random-spawner", {
     yPos: { type: "number", default: 0 },
     rotationType: { type: "string", default: "randomY" },
     isGrabbable: { type: "boolean", default: false },
-    physicsType: { type: "string", default: "static" },
+    physicsType: { type: "string", default: "none" },
   },
 
   init: function () {
