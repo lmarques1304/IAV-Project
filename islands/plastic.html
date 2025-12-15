@@ -6,16 +6,10 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
-
-    <script src="../js/island.js" defer></script>
-    <script src="../js/simple-grab.js" defer></script>
-    <script src="../js/delete-on-contact.js" defer></script>
-    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
-    <script src="../js/random-spawner.js" defer></script>
   </head>
 
   <body>
-    <a-scene physics="gravity: -9.8; debug: false" game-manager>
+    <a-scene physics="gravity: -9.8; debug: false" game-manager island-setup>
       <a-assets>
         <a-asset-item
           id="palmModel"
@@ -172,7 +166,7 @@
       ></a-entity>
 
       <a-entity
-        random-spawner="model: #plasticItem1; count: 55; scale: 0.1 0.1 0.1; rotationType: lying; yPos: -0.4; isGrabbable: true; physics: dynamic"
+        random-spawner="model: #plasticItem1; count: 50; scale: 0.1 0.1 0.1; rotationType: lying; yPos: -0.4; isGrabbable: true; physics: dynamic"
       ></a-entity>
       <a-entity
         random-spawner="model: #plasticItem2; count: 50; scale: 2 2 2; yPos: -0.2; isGrabbable: true; physics: dynamic"
@@ -182,10 +176,10 @@
       ></a-entity>
 
       <a-entity
-        random-spawner="model: #castle; count: 3; scale: 0.05 0.05 0.05; yPos: -0.5; physics: static"
+        random-spawner="model: #castle; count: 4; scale: 0.05 0.05 0.05; yPos: -0.5; physics: static"
       ></a-entity>
       <a-entity
-        random-spawner="model: #surfboard; count: 3; scale: 0.1 0.1 0.1; yPos: -0.5; physics: static"
+        random-spawner="model: #surfboard; count: 4; scale: 0.1 0.1 0.1; yPos: -0.5; physics: static"
       ></a-entity>
 
       <a-entity
@@ -197,5 +191,11 @@
       >
       </a-entity>
     </a-scene>
+
+    <script src="../js/island.js" defer></script>
+    <script src="../js/simple-grab.js" defer></script>
+    <script src="../js/delete-on-contact.js" defer></script>
+    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
+    <script src="../js/random-spawner.js" defer></script>
   </body>
 </html>
