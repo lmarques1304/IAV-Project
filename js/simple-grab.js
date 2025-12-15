@@ -1,62 +1,103 @@
-/* File: js/simple-grab.js */
 AFRAME.registerComponent("simple-grab", {
   init: function () {
-    this.heldItem = null;
-    this.hoveredItem = null;
+    this.grabbedEl = null;
+    this.hoveredEl = null;
 
-    // Bind functions
+    // Bind event handlers
     this.onHit = this.onHit.bind(this);
+    this.onHitEnd = this.onHitEnd.bind(this);
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
 
-    // Event Listeners
-    // Hit detection (finding the object)
+    // 1. Listen for collisions (Hand touching object)
+    // Note: sphere-collider uses 'hit'/'hitend', aabb-collider uses 'hitstart'/'hitend'
+    // We listen to both to be safe.
     this.el.addEventListener("hit", this.onHit);
-    
-    // VR Controllers
+    this.el.addEventListener("hitstart", this.onHit);
+    this.el.addEventListener("hitend", this.onHitEnd);
+
+    // 2. Listen for controller buttons (Trigger or Grip)
     this.el.addEventListener("triggerdown", this.onGrab);
     this.el.addEventListener("gripdown", this.onGrab);
+
+    // 3. Listen for release
     this.el.addEventListener("triggerup", this.onRelease);
     this.el.addEventListener("gripup", this.onRelease);
 
-    // Desktop Mouse (Scene listener ensures clicks register anywhere)
-    this.el.sceneEl.addEventListener("mousedown", this.onGrab);
-    this.el.sceneEl.addEventListener("mouseup", this.onRelease);
+    // 4. Desktop/Mouse Support (Click to grab)
+    this.el.addEventListener("mousedown", this.onGrab);
+    this.el.addEventListener("mouseup", this.onRelease);
   },
 
   onHit: function (evt) {
-    if (this.heldItem) return; // Don't look for new items if holding one
+    // If we are already holding something, ignore new hits
+    if (this.grabbedEl) return;
 
-    const hitEl = evt.detail.intersectedEls[0] || evt.detail.el;
-    
-    // Only care about .grabbable objects
-    if (hitEl && hitEl.classList.contains("grabbable")) {
-      this.hoveredItem = hitEl;
+    // Get the first intersected element
+    const hitEl = evt.detail.intersectedEls
+      ? evt.detail.intersectedEls[0]
+      : evt.detail.el;
+
+    if (!hitEl || !hitEl.classList.contains("grabbable")) return;
+
+    // Highlight the object to show it's ready to be grabbed
+    if (this.hoveredEl !== hitEl) {
+      this.hoveredEl = hitEl;
+      this.savedColor =
+        this.hoveredEl.getAttribute("material")?.color || "white";
+      this.hoveredEl.setAttribute("material", "color", "#FF0000"); // Turn RED on hover
+    }
+  },
+
+  onHitEnd: function () {
+    // Restore color when hand leaves
+    if (this.hoveredEl && !this.grabbedEl) {
+      this.hoveredEl.setAttribute("material", "color", this.savedColor);
+      this.hoveredEl = null;
     }
   },
 
   onGrab: function () {
-    // If we have something hovered and we aren't holding anything
-    if (this.hoveredItem && !this.heldItem) {
-      this.heldItem = this.hoveredItem;
+    // 1. Decide what to grab: either the hovered object OR ask the collider directly
+    let target = this.hoveredEl;
 
-      // 1. Remove Physics (So it doesn't fight the hand)
-      this.heldItem.removeAttribute("static-body");
-      this.heldItem.removeAttribute("dynamic-body");
-
-      // 2. Attach to Hand
-      this.el.object3D.attach(this.heldItem.object3D);
+    if (!target) {
+      // Fallback: Check collider directly if event was missed
+      const collider = this.el.components["sphere-collider"];
+      if (collider && collider.intersectedEls.length > 0) {
+        target = collider.intersectedEls.find((el) =>
+          el.classList.contains("grabbable")
+        );
+      }
     }
+
+    if (!target) return; // Nothing to grab
+
+    this.grabbedEl = target;
+
+    // Restore original color before grabbing
+    if (this.savedColor) {
+      this.grabbedEl.setAttribute("material", "color", this.savedColor);
+    }
+
+    // 2. DISABLE PHYSICS so it doesn't fight the hand
+    this.grabbedEl.removeAttribute("dynamic-body");
+
+    // 3. Attach to hand
+    this.el.object3D.attach(this.grabbedEl.object3D);
   },
 
   onRelease: function () {
-    if (this.heldItem) {
-      this.el.sceneEl.object3D.attach(this.heldItem.object3D);
+    if (!this.grabbedEl) return;
 
-      this.heldItem.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+    // 1. Detach from hand and re-attach to scene
+    this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
-      this.heldItem = null;
-      this.hoveredItem = null;
-    }
+    // 2. Re-enable physics
+    this.grabbedEl.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+
+    // 3. Reset state
+    this.grabbedEl = null;
+    this.hoveredEl = null;
   },
 });
