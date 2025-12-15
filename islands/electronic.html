@@ -31,38 +31,31 @@
           id="decorCrate"
           src="../assets/eletronic-trash/crate.glb"
         ></a-asset-item>
-                       
         <a-asset-item
           id="eWasteItem1"
           src="../assets/eletronic-trash/broken_smartphone_glb__fbx__textures.glb"
         ></a-asset-item>
-               
         <a-asset-item
           id="eWasteItem2"
           src="../assets/eletronic-trash/flashlight.glb"
         ></a-asset-item>
-               
         <a-asset-item
           id="eWasteItem3"
           src="../assets/eletronic-trash/cc0_set_of_electronic_components.glb"
         ></a-asset-item>
-                       
         <a-asset-item
           id="binModel"
           src="../assets/eletronic-trash/washing_machine.glb"
         ></a-asset-item>
 
-               
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
-               
-        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>    
-         
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
       </a-assets>
-                       
+
       <a-entity
         id="next-island-portal"
         position="0 1 -15"
@@ -72,7 +65,6 @@
         class="clickable"
         navigate-on-click="url: plastic.html"
       >
-               
         <a-sphere
           radius="1"
           color="#FF00FF"
@@ -81,9 +73,7 @@
           event-set__hoveron="material.color: #FFFFFF"
           event-set__hoveroff="material.color: #FF00FF"
         >
-                 
         </a-sphere>
-               
         <a-text
           value="IR PARA ILHA PLÁSTICA"
           align="center"
@@ -92,7 +82,6 @@
           rotation="0 0 0"
           width="5"
         ></a-text>
-             
       </a-entity>
       <a-sky color="#050510"></a-sky>
       <a-light
@@ -131,7 +120,6 @@
       </a-entity>
 
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
-               
         <a-plane
           color="#000000"
           opacity="0.5"
@@ -139,16 +127,14 @@
           height="0.5"
           position="0 0 -0.1"
         ></a-plane>
-               
+
         <a-entity
           id="counter"
           text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
           position="0 0 0"
         ></a-entity>
-             
       </a-entity>
 
-                 
       <a-entity
         id="bin"
         gltf-model="#binModel"
@@ -158,16 +144,13 @@
         static-body
         delete-on-contact
       >
-             
       </a-entity>
 
-           
       <a-entity
         sound="src: #bin-sound; volume: 1.4 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
-                 
       <a-box
         class="ground"
         position="0 -1 0"
@@ -177,10 +160,8 @@
         repeat="60 60"
         static-body
       >
-             
       </a-box>
 
-                 
       <a-plane
         id="ocean"
         position="0 -1.1 0"
