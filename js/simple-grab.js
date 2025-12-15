@@ -51,14 +51,10 @@ AFRAME.registerComponent("simple-grab", {
 
   onRelease: function () {
     if (this.heldItem) {
-      // 1. Attach back to Scene
       this.el.sceneEl.object3D.attach(this.heldItem.object3D);
 
-      // 2. WAKE UP (Add Dynamic Physics)
-      // "shape: box" is stable. "shape: hull" is accurate but expensive.
-      this.heldItem.setAttribute("dynamic-body", "mass: 1; shape: box");
+      this.heldItem.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
 
-      // 3. Clear State
       this.heldItem = null;
       this.hoveredItem = null;
     }
