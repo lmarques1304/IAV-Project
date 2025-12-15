@@ -1,7 +1,7 @@
 /* File: js/random-spawner.js */
 AFRAME.registerComponent("random-spawner", {
   schema: {
-    model: { type: "string", default: "" },
+    model: { type: "string", default: "gltf-model" },
     count: { type: "int", default: 10 },
     scale: { type: "vec3", default: { x: 1, y: 1, z: 1 } },
     areaSize: { type: "number", default: 50 },
@@ -31,15 +31,15 @@ AFRAME.registerComponent("random-spawner", {
         el.setAttribute("gltf-model", this.data.model);
       }
 
-      el.setAttribute(
-        "geometry",
-        "primitive: box; width: 0.5; height: 0.5; depth: 0.5"
-      );
-      el.setAttribute("material", "visible: false");
+      // el.setAttribute(
+      //   "geometry",
+      //   "primitive: box; width: 0.5; height: 0.5; depth: 0.5"
+      // );
+      // el.setAttribute("material", "visible: false");
 
       if (this.data.isGrabbable) {
-        el.classList.add("grabbable");
-        el.setAttribute("static-body", "shape: box");
+        el.setAttribute("class", "grabbable");
+        el.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
       }
 
       return el;
