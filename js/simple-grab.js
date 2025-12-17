@@ -2,6 +2,7 @@ AFRAME.registerComponent("simple-grab", {
   init: function () {
     this.grabbedEl = null;
     this.hoveredEl = null;
+    this.originalMaterials = new Map();
 
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
@@ -17,7 +18,7 @@ AFRAME.registerComponent("simple-grab", {
     this.el.addEventListener("mouseup", this.onRelease);
   },
 
-  tick: function () {
+  tick: function() {
     // Constantly check for nearby grabbable objects
     if (this.grabbedEl) return;
 
@@ -26,24 +27,52 @@ AFRAME.registerComponent("simple-grab", {
       const target = collider.intersectedEls.find((el) =>
         el.classList.contains("grabbable")
       );
-
+      
       if (target !== this.hoveredEl) {
         // Clear old hover
         if (this.hoveredEl) {
-          this.hoveredEl.removeAttribute("material");
+          this.clearHighlight(this.hoveredEl);
         }
-
+        
         // Set new hover
         this.hoveredEl = target;
         if (this.hoveredEl) {
-          this.hoveredEl.setAttribute("material", "color", "#FF0000");
+          this.highlightObject(this.hoveredEl);
         }
       }
     } else if (this.hoveredEl) {
       // Clear hover when nothing nearby
-      this.hoveredEl.removeAttribute("material");
+      this.clearHighlight(this.hoveredEl);
       this.hoveredEl = null;
     }
+  },
+
+  highlightObject: function(el) {
+    // For GLTF models, we need to traverse the mesh and change materials
+    el.object3D.traverse((node) => {
+      if (node.isMesh && node.material) {
+        // Store original color
+        if (!this.originalMaterials.has(node.uuid)) {
+          this.originalMaterials.set(node.uuid, node.material.emissive.getHex());
+        }
+        // Set red emissive glow
+        node.material.emissive.setHex(0xff0000);
+        node.material.emissiveIntensity = 0.5;
+      }
+    });
+  },
+
+  clearHighlight: function(el) {
+    // Restore original materials
+    el.object3D.traverse((node) => {
+      if (node.isMesh && node.material) {
+        const originalColor = this.originalMaterials.get(node.uuid);
+        if (originalColor !== undefined) {
+          node.material.emissive.setHex(originalColor);
+          node.material.emissiveIntensity = 0;
+        }
+      }
+    });
   },
 
   onGrab: function () {
@@ -51,27 +80,5 @@ AFRAME.registerComponent("simple-grab", {
 
     this.grabbedEl = this.hoveredEl;
 
-    // Remove physics
-    this.grabbedEl.removeAttribute("dynamic-body");
-    this.grabbedEl.removeAttribute("static-body");
-
-    // Attach to hand
-    this.el.object3D.attach(this.grabbedEl.object3D);
-
-    // Reset color
-    this.grabbedEl.removeAttribute("material");
-  },
-
-  onRelease: function () {
-    if (!this.grabbedEl) return;
-
-    // Detach from hand
-    this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
-
-    // Re-enable physics with same settings as creation
-    this.grabbedEl.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
-
-    this.grabbedEl = null;
-    this.hoveredEl = null;
-  },
-});
+    // Clear highlight
+    this.clearHighlight(t
