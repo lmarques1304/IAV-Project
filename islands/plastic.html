@@ -6,6 +6,9 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-super-hands-component@3.0.4/dist/super-hands.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -87,7 +90,7 @@
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
-          simple-grab
+          super-hands
         >
         </a-entity>
 
@@ -95,7 +98,7 @@
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
-          simple-grab
+          super-hands
         >
         </a-entity>
       </a-entity>
@@ -219,7 +222,7 @@
         addTrees(6, 3.5);
         addTrees(4, 4);
       </script>
-      <script>  
+      <script>
         const sandWidth = 55;
         const sandHeight = 55;
         const sandOffsetZ = 0;
