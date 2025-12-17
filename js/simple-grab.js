@@ -2,7 +2,6 @@ AFRAME.registerComponent("simple-grab", {
   init: function () {
     this.grabbedEl = null;
     this.hoveredEl = null;
-    this.originalMaterials = new Map();
 
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
@@ -13,72 +12,127 @@ AFRAME.registerComponent("simple-grab", {
     this.el.addEventListener("triggerup", this.onRelease);
     this.el.addEventListener("gripup", this.onRelease);
 
-    // Desktop/Mouse Support
+    // Desktop/Mouse Support (for testing without VR)
     this.el.addEventListener("mousedown", this.onGrab);
     this.el.addEventListener("mouseup", this.onRelease);
   },
 
-  tick: function() {
-    // Constantly check for nearby grabbable objects
+  tick: function () {
+    // Don't check for new objects while holding something
     if (this.grabbedEl) return;
 
+    // Check collision with sphere-collider
     const collider = this.el.components["sphere-collider"];
-    if (collider && collider.intersectedEls.length > 0) {
-      const target = collider.intersectedEls.find((el) =>
-        el.classList.contains("grabbable")
-      );
-      
-      if (target !== this.hoveredEl) {
-        // Clear old hover
-        if (this.hoveredEl) {
-          this.clearHighlight(this.hoveredEl);
-        }
-        
-        // Set new hover
-        this.hoveredEl = target;
-        if (this.hoveredEl) {
-          this.highlightObject(this.hoveredEl);
+    if (!collider) return;
+
+    // Find the closest grabbable object
+    let closestEl = null;
+    let closestDistance = Infinity;
+
+    const handPos = this.el.object3D.position;
+
+    collider.intersectedEls.forEach((el) => {
+      if (el.classList.contains("grabbable")) {
+        const distance = handPos.distanceTo(el.object3D.position);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestEl = el;
         }
       }
-    } else if (this.hoveredEl) {
-      // Clear hover when nothing nearby
-      this.clearHighlight(this.hoveredEl);
-      this.hoveredEl = null;
+    });
+
+    // Update hover state
+    if (closestEl !== this.hoveredEl) {
+      // Clear old hover
+      if (this.hoveredEl) {
+        this.setEmissive(this.hoveredEl, 0x000000);
+      }
+
+      // Set new hover
+      this.hoveredEl = closestEl;
+      if (this.hoveredEl) {
+        this.setEmissive(this.hoveredEl, 0xff0000);
+      }
     }
   },
 
-  highlightObject: function(el) {
-    // For GLTF models, we need to traverse the mesh and change materials
+  setEmissive: function (el, color) {
     el.object3D.traverse((node) => {
       if (node.isMesh && node.material) {
-        // Store original color
-        if (!this.originalMaterials.has(node.uuid)) {
-          this.originalMaterials.set(node.uuid, node.material.emissive.getHex());
-        }
-        // Set red emissive glow
-        node.material.emissive.setHex(0xff0000);
-        node.material.emissiveIntensity = 0.5;
-      }
-    });
-  },
-
-  clearHighlight: function(el) {
-    // Restore original materials
-    el.object3D.traverse((node) => {
-      if (node.isMesh && node.material) {
-        const originalColor = this.originalMaterials.get(node.uuid);
-        if (originalColor !== undefined) {
-          node.material.emissive.setHex(originalColor);
-          node.material.emissiveIntensity = 0;
-        }
+        node.material.emissive.setHex(color);
+        node.material.needsUpdate = true;
       }
     });
   },
 
   onGrab: function () {
-    if (!this.hoveredEl || this.grabbedEl) return;
+    // If already holding something, ignore
+    if (this.grabbedEl) return;
 
-    this.grabbedEl = this.hoveredEl;
+    // Check if we have something to grab
+    const collider = this.el.components["sphere-collider"];
+    if (!collider || collider.intersectedEls.length === 0) return;
+
+    // Find a grabbable object
+    let target = null;
+    for (let i = 0; i < collider.intersectedEls.length; i++) {
+      if (collider.intersectedEls[i].classList.contains("grabbable")) {
+        target = collider.intersectedEls[i];
+        break;
+      }
+    }
+
+    if (!target) return;
+
+    // Grab the object
+    this.grabbedEl = target;
 
     // Clear highlight
-    this.clearHighlight(t
+    this.setEmissive(this.grabbedEl, 0x000000);
+
+    // Remove physics body
+    if (this.grabbedEl.body) {
+      this.grabbedEl.removeAttribute("dynamic-body");
+      this.grabbedEl.removeAttribute("static-body");
+    }
+
+    // Attach to hand (parent the object to the controller)
+    this.el.object3D.attach(this.grabbedEl.object3D);
+  },
+
+  onRelease: function () {
+    if (!this.grabbedEl) return;
+
+    // Get current world position and rotation before detaching
+    const worldPos = new THREE.Vector3();
+    const worldQuat = new THREE.Quaternion();
+    this.grabbedEl.object3D.getWorldPosition(worldPos);
+    this.grabbedEl.object3D.getWorldQuaternion(worldQuat);
+
+    // Detach from hand and re-parent to scene
+    this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
+
+    // Set the world position/rotation (in case attach changes it)
+    this.grabbedEl.object3D.position.copy(worldPos);
+    this.grabbedEl.object3D.quaternion.copy(worldQuat);
+
+    // Re-enable physics
+    this.grabbedEl.setAttribute("dynamic-body", {
+      mass: 0.2,
+      shape: "auto",
+      linearDamping: 0.1,
+      angularDamping: 0.1,
+    });
+
+    // Clear references
+    this.grabbedEl = null;
+    this.hoveredEl = null;
+  },
+
+  remove: function () {
+    // Cleanup
+    if (this.grabbedEl) {
+      this.onRelease();
+    }
+  },
+});
