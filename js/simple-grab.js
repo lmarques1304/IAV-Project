@@ -3,86 +3,73 @@ AFRAME.registerComponent("simple-grab", {
     this.grabbedEl = null;
     this.hoveredEl = null;
 
-    // Bind event handlers
-    this.onHit = this.onHit.bind(this);
-    this.onHitEnd = this.onHitEnd.bind(this);
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
 
-    // 1. Listen for collisions
-    this.el.addEventListener("hit", this.onHit);
-    this.el.addEventListener("hitstart", this.onHit);
-    this.el.addEventListener("hitend", this.onHitEnd);
-
-    // 2. Listen for controller buttons
+    // Controller buttons
     this.el.addEventListener("triggerdown", this.onGrab);
     this.el.addEventListener("gripdown", this.onGrab);
-
-    // 3. Listen for release
     this.el.addEventListener("triggerup", this.onRelease);
     this.el.addEventListener("gripup", this.onRelease);
 
-    // 4. Desktop/Mouse Support
+    // Desktop/Mouse Support
     this.el.addEventListener("mousedown", this.onGrab);
     this.el.addEventListener("mouseup", this.onRelease);
   },
 
-  onHit: function (evt) {
+  tick: function () {
+    // Constantly check for nearby grabbable objects
     if (this.grabbedEl) return;
 
-    const hitEl = evt.detail.intersectedEls
-      ? evt.detail.intersectedEls[0]
-      : evt.detail.el;
+    const collider = this.el.components["sphere-collider"];
+    if (collider && collider.intersectedEls.length > 0) {
+      const target = collider.intersectedEls.find((el) =>
+        el.classList.contains("grabbable")
+      );
 
-    if (!hitEl || !hitEl.classList.contains("grabbable")) return;
+      if (target !== this.hoveredEl) {
+        // Clear old hover
+        if (this.hoveredEl) {
+          this.hoveredEl.removeAttribute("material");
+        }
 
-    if (this.hoveredEl !== hitEl) {
-      this.hoveredEl = hitEl;
-      this.savedColor =
-        this.hoveredEl.getAttribute("material")?.color || "white";
-      this.hoveredEl.setAttribute("material", "color", "#FF0000");
-    }
-  },
-
-  onHitEnd: function () {
-    if (this.hoveredEl && !this.grabbedEl) {
-      this.hoveredEl.setAttribute("material", "color", this.savedColor);
+        // Set new hover
+        this.hoveredEl = target;
+        if (this.hoveredEl) {
+          this.hoveredEl.setAttribute("material", "color", "#FF0000");
+        }
+      }
+    } else if (this.hoveredEl) {
+      // Clear hover when nothing nearby
+      this.hoveredEl.removeAttribute("material");
       this.hoveredEl = null;
     }
   },
 
   onGrab: function () {
-    let target = this.hoveredEl;
+    if (!this.hoveredEl || this.grabbedEl) return;
 
-    if (!target) {
-      const collider = this.el.components["sphere-collider"];
-      if (collider && collider.intersectedEls.length > 0) {
-        target = collider.intersectedEls.find((el) =>
-          el.classList.contains("grabbable")
-        );
-      }
-    }
+    this.grabbedEl = this.hoveredEl;
 
-    if (!target) return;
-
-    this.grabbedEl = target;
-
-    if (this.savedColor) {
-      this.grabbedEl.setAttribute("material", "color", this.savedColor);
-    }
-
+    // Remove physics
     this.grabbedEl.removeAttribute("dynamic-body");
     this.grabbedEl.removeAttribute("static-body");
 
+    // Attach to hand
     this.el.object3D.attach(this.grabbedEl.object3D);
+
+    // Reset color
+    this.grabbedEl.removeAttribute("material");
   },
 
   onRelease: function () {
     if (!this.grabbedEl) return;
 
+    // Detach from hand
     this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
-    this.grabbedEl.setAttribute("dynamic-body", "mass: 1; shape: box");
+    // Re-enable physics with same settings as creation
+    this.grabbedEl.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
 
     this.grabbedEl = null;
     this.hoveredEl = null;

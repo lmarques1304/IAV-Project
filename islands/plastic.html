@@ -7,8 +7,11 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-super-hands-component@3.0.4/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+    <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -90,7 +93,7 @@
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
-          super-hands
+          simple-grab
         >
         </a-entity>
 
@@ -98,7 +101,7 @@
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
           sphere-collider="objects: .grabbable; radius: 0.7"
-          super-hands
+          simple-grab
         >
         </a-entity>
       </a-entity>
@@ -124,6 +127,7 @@
         gltf-model="#binModel"
         position="0 -0.5 -5"
         static-body
+        shape="box"
         delete-on-contact
       >
       </a-entity>
@@ -286,11 +290,5 @@
         decorateBeach("#surfboard", 3, 0.1, -0.5); // Surfboards (stuck in sand)
       </script>
     </a-scene>
-
-    <script src="../js/island.js" defer></script>
-    <script src="../js/simple-grab.js" defer></script>
-    <script src="../js/delete-on-contact.js" defer></script>
-    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
-    <script src="../js/random-spawner.js" defer></script>
   </body>
 </html>
