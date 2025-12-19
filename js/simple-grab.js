@@ -1,3 +1,4 @@
+/* File: js/simple-grab.js */
 AFRAME.registerComponent("simple-grab", {
   init: function () {
     this.grabbedEl = null;
@@ -12,59 +13,60 @@ AFRAME.registerComponent("simple-grab", {
     this.el.addEventListener("triggerup", this.onRelease);
     this.el.addEventListener("gripup", this.onRelease);
 
-    // Desktop/Mouse Support (for testing without VR)
+    // Desktop/Mouse Support
     this.el.addEventListener("mousedown", this.onGrab);
     this.el.addEventListener("mouseup", this.onRelease);
   },
 
   tick: function () {
-    // Don't check for new objects while holding something
+    // 1. Don't look for new objects if already holding one
     if (this.grabbedEl) return;
 
-    // Check collision with sphere-collider
+    // 2. Get the collider component
     const collider = this.el.components["sphere-collider"];
-    
-    // Safety check: if sphere-collider isn't ready or loaded, stop here
-    if (!collider) return; 
+    if (!collider) return;
 
-    // A-Frame Extras uses 'els' for the array of intersected elements
-    const intersectedEls = collider.els || []; 
+    // 3. Get list of objects the collider currently hits
+    // (A-Frame Extras uses 'els')
+    const intersectedEls = collider.els || [];
 
-    if (intersectedEls.length === 0) {
-      if (this.hoveredEl) {
-        this.setEmissive(this.hoveredEl, 0x000000);
-        this.hoveredEl = null;
-      }
-      return;
-    }
-
-    // Find the closest grabbable object
+    // 4. Find the closest object that is ALSO within a strict distance
     let closestEl = null;
     let closestDistance = Infinity;
-    const handPos = this.el.object3D.position;
+    const MAX_GRAB_DISTANCE = 0.4; // Maximum reach in meters (prevents "Force Grab")
+    
+    const handPos = new THREE.Vector3();
+    this.el.object3D.getWorldPosition(handPos);
 
     intersectedEls.forEach((el) => {
-      // Ensure the element is valid and has the class
+      // Must be a valid element with the correct class
       if (el && el.classList && el.classList.contains("grabbable")) {
-        const distance = handPos.distanceTo(el.object3D.position);
-        if (distance < closestDistance) {
+        
+        // Calculate real distance from hand to object center
+        const objectPos = new THREE.Vector3();
+        el.object3D.getWorldPosition(objectPos);
+        const distance = handPos.distanceTo(objectPos);
+
+        // STHRICT CHECK: Ignore objects strictly outside our max reach
+        // This ignores huge bounding boxes triggering grabs from far away
+        if (distance < MAX_GRAB_DISTANCE && distance < closestDistance) {
           closestDistance = distance;
           closestEl = el;
         }
       }
     });
 
-    // Update hover state
+    // 5. Update Visuals (Red Highlight)
     if (closestEl !== this.hoveredEl) {
-      // Clear old hover
+      // Un-highlight previous
       if (this.hoveredEl) {
         this.setEmissive(this.hoveredEl, 0x000000);
       }
 
-      // Set new hover
+      // Highlight new
       this.hoveredEl = closestEl;
       if (this.hoveredEl) {
-        this.setEmissive(this.hoveredEl, 0xff0000); // Highlight Red
+        this.setEmissive(this.hoveredEl, 0xff0000); // Red
       }
     }
   },
@@ -72,10 +74,14 @@ AFRAME.registerComponent("simple-grab", {
   setEmissive: function (el, color) {
     if (!el) return;
     el.object3D.traverse((node) => {
+      // Only effect meshes (visible parts), not invisible helpers
       if (node.isMesh && node.material) {
-        // Clone material to avoid affecting all instances of the same model
-        // (Optional optimization: cache materials, but cloning is safer for highlights)
-        // node.material = node.material.clone(); 
+        // Cloning material allows us to highlight ONE item without turning ALL items red
+        // (Performance note: For a simple game, this is fine. For massive games, use a shader)
+        if (!node.material.isCloned) {
+             node.material = node.material.clone();
+             node.material.isCloned = true;
+        }
         node.material.emissive.setHex(color);
         node.material.needsUpdate = true;
       }
@@ -84,42 +90,37 @@ AFRAME.registerComponent("simple-grab", {
 
   onGrab: function () {
     if (this.grabbedEl) return;
-    if (!this.hoveredEl) return; // We rely on tick to find the best candidate
+    if (!this.hoveredEl) return; // Only grab if we are hovering a valid, close object
 
-    // Grab the object
     this.grabbedEl = this.hoveredEl;
 
     // Clear highlight
     this.setEmissive(this.grabbedEl, 0x000000);
 
-    // Remove physics body so we can move it manually
+    // Disable physics while holding
     if (this.grabbedEl.getAttribute("dynamic-body")) {
-        this.grabbedEl.removeAttribute("dynamic-body");
+      this.grabbedEl.removeAttribute("dynamic-body");
     }
-    // Also clear static body if it exists, just in case
     if (this.grabbedEl.getAttribute("static-body")) {
-        this.grabbedEl.removeAttribute("static-body");
+      this.grabbedEl.removeAttribute("static-body");
     }
 
-    // Attach to hand (parent the object to the controller)
+    // Attach to hand
     this.el.object3D.attach(this.grabbedEl.object3D);
   },
 
   onRelease: function () {
     if (!this.grabbedEl) return;
 
-    // Detach from hand and re-parent to scene
+    // Detach from hand, re-attach to scene
     this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
     // Re-enable physics
     this.grabbedEl.setAttribute("dynamic-body", {
       mass: 0.2,
-      shape: "auto",
-      linearDamping: 0.1,
-      angularDamping: 0.1,
+      shape: "auto"
     });
 
-    // Clear references
     this.grabbedEl = null;
     this.hoveredEl = null;
   },
