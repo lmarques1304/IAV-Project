@@ -1,7 +1,7 @@
 /* File: js/random-spawner.js */
 AFRAME.registerComponent("random-spawner", {
   schema: {
-    model: { type: "string", default: "" }, // Default empty to check if provided
+    model: { type: "string", default: "" },
     count: { type: "int", default: 10 },
     scale: { type: "vec3", default: { x: 1, y: 1, z: 1 } },
     areaSize: { type: "number", default: 50 },
@@ -12,9 +12,6 @@ AFRAME.registerComponent("random-spawner", {
   },
 
   init: function () {
-    // Helper function to generate random numbers
-    const random = (min, max) => Math.random() * (max - min) + min;
-
     const createObject = () => {
       const el = document.createElement("a-entity");
 
@@ -36,20 +33,17 @@ AFRAME.registerComponent("random-spawner", {
         el.setAttribute("gltf-model", this.data.model);
       }
 
-      // 4. Handle Grabbable & Physics
+      // 4. Handle Grabbable & Static Physics
       if (this.data.isGrabbable) {
-        // Essential for simple-grab to find it
         el.classList.add("grabbable");
 
-        // CRITICAL FIX: Wait for the model to load before adding physics
-        // Otherwise physics body calculates size as 0
+        // Wait for model to load, then apply STATIC body
         el.addEventListener("model-loaded", () => {
-          // 'hull' wraps the model tightly, 'box' is a simple box
-          // 'hull' is usually best for bottles/cans
-          // el.setAttribute("dynamic-body", {
-          //   mass: 0.2,
-          //   shape: "hull",
-          // });
+          // STATIC body: Cheap for performance. Won't move or fall.
+          // Shape 'hull': Matches the visual mesh closely.
+          el.setAttribute("static-body", {
+            shape: "hull" 
+          });
         });
       }
 
