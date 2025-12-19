@@ -46,10 +46,10 @@ AFRAME.registerComponent("random-spawner", {
         el.addEventListener("model-loaded", () => {
           // 'hull' wraps the model tightly, 'box' is a simple box
           // 'hull' is usually best for bottles/cans
-          el.setAttribute("dynamic-body", {
-            mass: 0.2,
-            shape: "hull",
-          });
+          // el.setAttribute("dynamic-body", {
+          //   mass: 0.2,
+          //   shape: "hull",
+          // });
         });
       }
 
