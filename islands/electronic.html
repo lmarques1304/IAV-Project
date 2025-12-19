@@ -174,14 +174,14 @@
       >
       </a-plane>
 
-      <!-- <a-entity
+      <a-entity
         random-spawner="model: #decorRack; count: 10; scale: 3 3 3; areaSize: 45; yPos: -0.5"
       ></a-entity>
       <a-entity
         random-spawner="model: #decorCrate; count: 10; scale: 0.01 0.01 0.01; areaSize: 45; yPos: -0.5"
       ></a-entity>
 
-      <a-entity
+      <!-- <a-entity
         random-spawner="model: #eWasteItem1; count: 25; scale: 0.6 0.8 0.6; yPos: 0.2; rotationType: lying; isGrabbable: true; physics: dynamic"
       ></a-entity>
       <a-entity
@@ -194,7 +194,7 @@
       <script>
         const sandWidth = 55;
         const sandHeight = 55;
-        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
+        const sandOffsetZ = 0;
 
         const createTrash = (modelId, count, scale, yPos, rotationType) => {
           for (let i = 0; i < count; i++) {
@@ -217,47 +217,11 @@
 
             document.querySelector("a-scene").appendChild(trash);
           }
-        }; // Geração dos 3 Tipos de Lixo Eletrónico // Item 1: Celulares antigos (Pequeno)
-
-        createTrash("#eWasteItem1", 25, "0.6 0.8 0.6", 0.3, "lying"); // Item 2: Monitores/Equipamento grande (Grande)
-        createTrash("#eWasteItem2", 10, "0.02 0.02 0.02", 0.2, "random"); // Item 3: Baterias/Pequenos componentes (Muito Pequeno)
-        createTrash("#eWasteItem3", 15, "8 8 8", 0.3, "lying");
-
-        const createCyberEnvironment = () => {
-          const scene = document.querySelector("a-scene");
-          const models = ["#decorRack", "#decorCrate"];
-
-          for (let i = 0; i < 20; i++) {
-            const pile = document.createElement("a-entity");
-            const chosenModel =
-              models[Math.floor(Math.random() * models.length)];
-
-            const x = (Math.random() - 0.5) * 50;
-            const z = (Math.random() - 0.5) * 50;
-            // Keep center clear for player
-            if (Math.abs(x) < 5 && Math.abs(z) < 5) continue;
-
-            pile.setAttribute("gltf-model", chosenModel);
-            pile.setAttribute("position", `${x} -0.5 ${z}`);
-
-            // Random rotation and scale to look like junk
-            pile.setAttribute(
-              "rotation",
-              `${Math.random() * 30} ${Math.random() * 360} ${
-                Math.random() * 30
-              }`
-            );
-
-            if (chosenModel === "#decorCrate") {
-              pile.setAttribute("scale", "0.01 0.01 0.01");
-            } else {
-              pile.setAttribute("scale", "3 3 3");
-            }
-            pile.setAttribute("static-body", "");
-            scene.appendChild(pile);
-          }
         };
-        createCyberEnvironment();
+
+        createTrash("#eWasteItem1", 25, "0.6 0.8 0.6", 0.3, "lying");
+        createTrash("#eWasteItem2", 10, "0.02 0.02 0.02", 0.2, "random");
+        createTrash("#eWasteItem3", 15, "8 8 8", 0.3, "lying");
       </script>
     </a-scene>
   </body>
