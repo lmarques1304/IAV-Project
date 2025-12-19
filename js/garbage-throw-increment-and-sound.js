@@ -70,7 +70,7 @@ AFRAME.registerComponent("game-manager", {
         nextPage = "electronic.html";
         break;
       case "electronic.html":
-        window.location.href = "index.html";
+        window.location.href = "final.html";
         return;
     }
 
