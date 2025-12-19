@@ -33,15 +33,14 @@ AFRAME.registerComponent("simple-grab", {
     // 4. Find the closest object that is ALSO within a strict distance
     let closestEl = null;
     let closestDistance = Infinity;
-    const MAX_GRAB_DISTANCE = 0.4; // Maximum reach in meters (prevents "Force Grab")
-    
+    const MAX_GRAB_DISTANCE = 1; // Maximum reach in meters (prevents "Force Grab")
+
     const handPos = new THREE.Vector3();
     this.el.object3D.getWorldPosition(handPos);
 
     intersectedEls.forEach((el) => {
       // Must be a valid element with the correct class
       if (el && el.classList && el.classList.contains("grabbable")) {
-        
         // Calculate real distance from hand to object center
         const objectPos = new THREE.Vector3();
         el.object3D.getWorldPosition(objectPos);
@@ -79,8 +78,8 @@ AFRAME.registerComponent("simple-grab", {
         // Cloning material allows us to highlight ONE item without turning ALL items red
         // (Performance note: For a simple game, this is fine. For massive games, use a shader)
         if (!node.material.isCloned) {
-             node.material = node.material.clone();
-             node.material.isCloned = true;
+          node.material = node.material.clone();
+          node.material.isCloned = true;
         }
         node.material.emissive.setHex(color);
         node.material.needsUpdate = true;
@@ -118,7 +117,7 @@ AFRAME.registerComponent("simple-grab", {
     // Re-enable physics
     this.grabbedEl.setAttribute("dynamic-body", {
       mass: 0.2,
-      shape: "auto"
+      shape: "auto",
     });
 
     this.grabbedEl = null;
