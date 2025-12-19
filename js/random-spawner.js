@@ -1,4 +1,3 @@
-/* File: js/random-spawner.js */
 AFRAME.registerComponent("random-spawner", {
   schema: {
     model: { type: "string", default: "" },
@@ -15,38 +14,31 @@ AFRAME.registerComponent("random-spawner", {
     const createObject = () => {
       const el = document.createElement("a-entity");
 
-      // 1. Position & Scale
+      // Position
       const x = (Math.random() - 0.5) * this.data.areaSize;
       const z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
       el.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
       el.setAttribute("scale", this.data.scale);
 
-      // 2. Rotation
+      // Rotation
       if (this.data.rotationType === "lying") {
         el.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
       } else {
         el.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
       }
 
-      // 3. Set Model
-      if (this.data.model) {
-        el.setAttribute("gltf-model", this.data.model);
-      }
+      // Model
+      if (this.data.model) el.setAttribute("gltf-model", this.data.model);
 
-      // 4. Handle Grabbable & Static Physics
+      // Grabbable Setup
       if (this.data.isGrabbable) {
         el.classList.add("grabbable");
 
-        // Wait for model to load, then apply STATIC body
+        // Wait for model load, then add STATIC body
         el.addEventListener("model-loaded", () => {
-          // STATIC body: Cheap for performance. Won't move or fall.
-          // Shape 'hull': Matches the visual mesh closely.
-          el.setAttribute("static-body", {
-            shape: "hull" 
-          });
+          el.setAttribute("static-body", { shape: "hull" });
         });
       }
-
       return el;
     };
 
