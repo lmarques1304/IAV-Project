@@ -170,7 +170,7 @@
         random-spawner="model: #palmModel; count: 4; scale: 4 4 4; yPos: -0.5"
       ></a-entity>
 
-      <a-entity
+      <!-- <a-entity
         random-spawner="model: #plasticItem1; count: 55; scale: 0.1 0.1 0.1; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
       ></a-entity>
       <a-entity
@@ -178,7 +178,7 @@
       ></a-entity>
       <a-entity
         random-spawner="model: #plasticItem3; count: 20; scale: 3 3 3; yPos: -0.2; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity>
+      ></a-entity> -->
 
       <a-entity
         random-spawner="model: #surfboard; count: 4; scale: 0.1 0.1 0.1; yPos: -0.5"
@@ -192,6 +192,39 @@
         scale="3 3 3"
         gltf-model="#beachBar"
       ></a-entity>
+
+      <script>
+        const sandWidth = 55;
+        const sandHeight = 55;
+        const sandOffsetZ = 0;
+
+        const createPlastic = (modelId, count, scale, yPos, rotationType) => {
+          for (let i = 0; i < count; i++) {
+            const plastic = document.createElement("a-entity");
+            plastic.setAttribute("gltf-model", modelId);
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            plastic.setAttribute("position", `${x} ${yPos} ${z}`);
+            plastic.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              plastic.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              plastic.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            // CRITICAL: Must have 'grabbable' class
+            plastic.setAttribute("class", "grabbable");
+            // Physics
+            plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
+            document.querySelector("a-scene").appendChild(plastic);
+          }
+        };
+
+        createPlastic("#plasticItem1", 55, "0.1 0.1 0.1", -0.4, "lying");
+        createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
+        createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
+      </script>
     </a-scene>
   </body>
 </html>
