@@ -12,7 +12,6 @@
     <script src="../js/delete-on-contact.js"></script>
     <script src="../js/garbage-throw-increment-and-sound.js"></script>
     <script src="../js/random-spawner.js"></script>
-    <script src="../js/sphere-collider.js"></script>
   </head>
 
   <body oncontextmenu="return false">
@@ -78,7 +77,6 @@
         position="0 20 0"
       ></a-light>
 
-      <!-- PLAYER -->
       <a-entity
         id="player"
         movement-controls="fly: false; speed: 0.2"
@@ -93,7 +91,7 @@
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
         >
         </a-entity>
@@ -101,13 +99,12 @@
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
         >
         </a-entity>
       </a-entity>
 
-      <!-- BIN AND COUNTER -->
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
         <a-plane
           color="#000000"
@@ -138,7 +135,6 @@
         id="garbage-throw-sound"
       ></a-entity>
 
-      <!-- ISLAND -->
       <a-box
         class="ground"
         position="0 -1 0"
@@ -149,7 +145,6 @@
         static-body
       >
       </a-box>
-
       <a-plane
         id="ocean"
         position="0 -1 0"
@@ -161,47 +156,6 @@
         static-body
       >
       </a-plane>
-
-      <!-- DECORATIONS AND TRASH ITEMS -->
-
-      <!-- <a-entity
-        random-spawner="model: #palmModel; count: 10; scale: 2 2 2; areaSize: 45; yPos: -0.5"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #palmModel; count: 8; scale: 2.5 2.5 2.5; areaSize: 45; yPos: -0.5"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #palmModel; count: 6; scale: 3.5 3.5 3.5; areaSize: 45; yPos: -0.5"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #palmModel; count: 4; scale: 4 4 4; areaSize: 45; yPos: -0.5"
-      ></a-entity>
-
-      <a-entity
-        random-spawner="model: #plasticItem1; count: 50; scale: 0.1 0.1 0.1; rotationType: lying; yPos: -0.4; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #plasticItem2; count: 50; scale: 2 2 2; yPos: -0.2; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #plasticItem3; count: 50; scale: 3 3 3; yPos: -0.1; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-
-      <a-entity
-        random-spawner="model: #castle; count: 4; scale: 0.05 0.05 0.05; yPos: -0.5; physics: static"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #surfboard; count: 4; scale: 0.1 0.1 0.1; yPos: -0.5; physics: static"
-      ></a-entity>
-
-      <a-entity
-        gltf-model="#beachBar"
-        position="15 -0.5 -15"
-        rotation="0 -45 0"
-        scale="3 3 3"
-        static-body
-      >
-      </a-entity> -->
 
       <script>
         const planeWidth = 45;
@@ -236,7 +190,6 @@
           for (let i = 0; i < count; i++) {
             const plastic = document.createElement("a-entity");
             plastic.setAttribute("gltf-model", modelId);
-
             const x = Math.random() * sandWidth - sandWidth / 2;
             const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
             plastic.setAttribute("position", `${x} ${yPos} ${z}`);
@@ -250,10 +203,8 @@
 
             // CRITICAL: Must have 'grabbable' class
             plastic.setAttribute("class", "grabbable");
-
             // Physics
             plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
-
             document.querySelector("a-scene").appendChild(plastic);
           }
         };
@@ -262,21 +213,20 @@
         createPlastic("#plasticItem2", 70, "2 2 2", -0.4, "random");
         createPlastic("#plasticItem3", 10, "3 3 3", -0.2, "random");
 
-        // Add a Beach Bar in the background
+        // Beach Bar
         const bar = document.createElement("a-entity");
         bar.setAttribute("gltf-model", "#beachBar");
-        bar.setAttribute("position", "15 -0.5 -15"); // Adjust position to be visible but out of the way
+        bar.setAttribute("position", "15 -0.5 -15");
         bar.setAttribute("scale", "3 3 3");
         bar.setAttribute("rotation", "0 -45 0");
         bar.setAttribute("static-body", "");
         document.querySelector("a-scene").appendChild(bar);
 
-        // Scatter decorations (Umbrellas, Castles, Crabs)
+        // Decorations
         const decorateBeach = (modelId, count, scale, yPos) => {
           for (let i = 0; i < count; i++) {
             const el = document.createElement("a-entity");
             el.setAttribute("gltf-model", modelId);
-            // Random position outside the immediate play area
             const x = (Math.random() - 0.5) * 50;
             const z = (Math.random() - 0.5) * 50;
             el.setAttribute("position", `${x} ${yPos} ${z}`);
@@ -287,8 +237,8 @@
           }
         };
 
-        decorateBeach("#castle", 3, 0.05, -0.5); // Sand castles
-        decorateBeach("#surfboard", 3, 0.1, -0.5); // Surfboards (stuck in sand)
+        decorateBeach("#castle", 3, 0.05, -0.5);
+        decorateBeach("#surfboard", 3, 0.1, -0.5);
       </script>
     </a-scene>
   </body>
