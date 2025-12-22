@@ -172,33 +172,57 @@
       <script>
         const sandWidth = 55;
         const sandHeight = 55;
-        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
+        const sandOffsetZ = 0;
 
         const createTrash = (modelId, count, scale, yPos, rotationType) => {
-          for (let i = 0; i < count; i++) {
-            const trash = document.createElement("a-entity");
-            trash.setAttribute("gltf-model", modelId);
+          const scene = document.querySelector("a-scene");
 
+          for (let i = 0; i < count; i++) {
+            // 1. Create a Wrapper Entity (The "Physical" Object)
+            // We use a primitive box so physics is guaranteed to work immediately
+            const wrapper = document.createElement("a-entity");
+
+            // Calculate Position
             const x = Math.random() * sandWidth - sandWidth / 2;
             const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
-            trash.setAttribute("position", `${x} ${yPos} ${z}`);
-            trash.setAttribute("scale", scale);
+            wrapper.setAttribute("position", `${x} ${yPos} ${z}`);
 
+            // PHYSICS & INTERACTION (Applied to the Wrapper)
+            wrapper.setAttribute("class", "grabbable");
+
+            // We give it a real geometry so the physics engine has data, but make it invisible.
+            // 0.25 (25cm) is a perfect size for VR hands to grab.
+            wrapper.setAttribute(
+              "geometry",
+              "primitive: box; width: 0.25; height: 0.25; depth: 0.25"
+            );
+            wrapper.setAttribute("material", "visible: false"); // Invisible hit box
+
+            // 2. Create the Visual Model (The "Child")
+            const visual = document.createElement("a-entity");
+            visual.setAttribute("gltf-model", modelId);
+            visual.setAttribute("scale", scale);
+
+            // Center the visual inside the physics box (tweak if needed)
+            visual.setAttribute("position", "0 -0.1 0");
+
+            // Apply Rotation to the visual (so the physics box stays aligned effectively)
             if (rotationType === "random") {
-              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+              visual.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
             } else if (rotationType === "lying") {
-              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+              visual.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
             }
 
-            trash.setAttribute("class", "grabbable");
-            trash.setAttribute("dynamic-body", "mass: 0.5; shape: box");
-
-            document.querySelector("a-scene").appendChild(trash);
+            // 3. Assemble
+            wrapper.appendChild(visual); // Put visual inside the physics wrapper
+            scene.appendChild(wrapper); // Put wrapper in the scene
           }
         };
 
-        createTrash("#glassItem1", 20, "0.2 0.2 0.2", 0.4, "random");
-        createTrash("#glassItem2", 15, "0.005 0.005 0.005", -0.2, "random");
+        // Generate the items
+        // Note: We can likely use yPos = 1 or 2 to ensure they don't spawn inside the floor
+        createTrash("#glassItem1", 20, "0.2 0.2 0.2", 0.5, "random");
+        createTrash("#glassItem2", 15, "0.005 0.005 0.005", 0, "random");
       </script>
     </a-scene>
   </body>
