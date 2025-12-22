@@ -68,31 +68,29 @@
       ></a-light>
 
       <a-entity
-        id="rig"
-        movement-controls="fly: false; speed: 0.2"
-        stay-in-bounds="xRange: 29; zRange: 29"
+        id="player"
+        movement-controls="fly: false; speed: 0.3"
+        stay-in-bounds="xRange: 28; zRange: 28"
       >
-        <a-camera position="0 0.5 0">
+        <a-camera position="0 1.6 0">
           <a-entity
-            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2 positional: false"
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
           ></a-entity>
         </a-camera>
 
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
-        >
-        </a-entity>
+        ></a-entity>
 
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.2"
           simple-grab
-        >
-        </a-entity>
+        ></a-entity>
       </a-entity>
 
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
