@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Recycle Islands VR - Metal Island</title>
+    <title>Recycle Islands VR - Organic Island</title>
+
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
@@ -14,42 +15,25 @@
     <script src="../js/random-spawner.js"></script>
   </head>
 
-   
   <body oncontextmenu="return false">
-       
-    <a-scene
-      physics="gravity: -9.8; debug: false"
-      fog="type: exponential; color: #584c42; density: 0.03;"
-      game-manager
-      island-setup
-    >
-           
+    <a-scene physics="gravity: -9.8; debug: false" game-manager island-setup>
       <a-assets>
         <a-asset-item
-          id="decorWasher"
-          src="../assets/eletronic-trash/washing_machine.glb"
+          id="organicItem1"
+          src="../assets/organic-trash/apple_with_a_bite.glb"
         ></a-asset-item>
         <a-asset-item
-          id="decorPipes"
-          src="../assets/metal-trash/industrial_pipes.glb"
+          id="organicItem2"
+          src="../assets/organic-trash/banana.glb"
         ></a-asset-item>
         <a-asset-item
-          id="decorFence"
-          src="../assets/metal-trash/rusty_fence.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="metalItem1"
-          src="../assets/metal-trash/screw.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="metalItem2"
-          src="../assets/metal-trash/old_metal_cup.glb"
+          id="organicItem3"
+          src="../assets/organic-trash/rotten_dirty_organic_waste.glb"
         ></a-asset-item>
         <a-asset-item
           id="binModel"
-          src="../assets/metal-trash/trash_can.glb"
+          src="../assets/organic-trash/sci_fi_trash_can.glb"
         ></a-asset-item>
-
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
@@ -58,38 +42,7 @@
         <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
       </a-assets>
 
-      <a-entity
-        id="next-island-portal"
-        position="0 1 -15"
-        rotation="0 0 0"
-        scale="0 0 0"
-        visible="false"
-        class="clickable"
-        navigate-on-click="url: organic.html"
-      >
-               
-        <a-sphere
-          radius="1"
-          color="#00FF00"
-          opacity="0.7"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
-          event-set__hoveron="material.color: #FFFFFF"
-          event-set__hoveroff="material.color: #00FF00"
-        >
-        </a-sphere>
-
-        <a-text
-          value="IR PARA ILHA ORGÂNICA"
-          align="center"
-          color="#000000"
-          position="0 0 1.1"
-          rotation="0 0 0"
-          width="5"
-        ></a-text>
-      </a-entity>
-
-      <a-sky color="#586f7c"></a-sky>
-
+      <a-sky color="#6A8D73"></a-sky>
       <a-light
         type="point"
         color="#ffffff"
@@ -144,15 +97,15 @@
       <a-entity
         id="bin"
         gltf-model="#binModel"
-        position="0 -0.5 -5"
-        scale="0.5 0.5 0.5"
+        position="0 0.5 -5"
+        scale="1 1 1"
         static-body
         delete-on-contact
       >
       </a-entity>
 
       <a-entity
-        sound="src: #bin-sound; volume: 1.4 positional: false"
+        sound="src: #bin-sound; volume: 1 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
@@ -161,7 +114,7 @@
         position="0 -1 0"
         scale="60 60 1"
         rotation="-90 0 0"
-        src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        src="../assets/textures/Ground/Mud002_1K-JPG/Mud002_1K-JPG_Color.jpg"
         repeat="60 60"
         static-body
       >
@@ -169,45 +122,21 @@
 
       <a-plane
         id="ocean"
-        position="0 -1 0"
+        position="0 -1.1 0"
         width="1000"
         height="1000"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
         repeat="1000 1000"
         static-body
-      >
-      </a-plane>
-
-      <a-entity
-        random-spawner="model: #decorWasher; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #decorPipes; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #decorFence; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: -0.5"
-      ></a-entity>
-
-      <!-- <a-entity
-        random-spawner="model: #metalItem1; count: 30; scale: 0.09 0.2 0.09; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #metalItem2; count: 30; scale: 0.015 0.05 0.015; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity> -->
+      ></a-plane>
 
       <script>
         const sandWidth = 55;
         const sandHeight = 55;
-        const sandOffsetZ = 0;
+        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
 
-        const createMetalTrash = (
-          modelId,
-          count,
-          scale,
-          yPos,
-          rotationType
-        ) => {
+        const createTrash = (modelId, count, scale, yPos, rotationType) => {
           for (let i = 0; i < count; i++) {
             const trash = document.createElement("a-entity");
             trash.setAttribute("gltf-model", modelId);
@@ -228,10 +157,11 @@
 
             document.querySelector("a-scene").appendChild(trash);
           }
-        }; // Parafusos (scale ajustado para 0.09 0.09 0.09)
+        };
 
-        createMetalTrash("#metalItem1", 40, "0.09 0.2 0.09", -0.4, "lying"); // Latas/Copos de metal (scale ajustado para 0.015 0.015 0.015)
-        createMetalTrash("#metalItem2", 30, "0.015 0.05 0.015", -0.4, "lying");
+        createTrash("#organicItem1", 15, "0.15 0.15 0.15", -0.7, "lying");
+        createTrash("#organicItem2", 15, "0.01 0.01 0.01", -0.7, "lying");
+        createTrash("#organicItem3", 10, "0.08 0.08 0.08", -0.8, "lying");
       </script>
     </a-scene>
   </body>

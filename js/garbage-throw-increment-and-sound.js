@@ -67,9 +67,9 @@ AFRAME.registerComponent("game-manager", {
         nextPage = "glass.html";
         break;
       case "glass.html":
-        nextPage = "electronic.html";
+        nextPage = "organic.html";
         break;
-      case "electronic.html":
+      case "organic.html":
         window.location.href = "final.html";
         return;
     }
