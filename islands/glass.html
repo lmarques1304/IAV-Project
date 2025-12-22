@@ -20,12 +20,12 @@
       <a-assets>
         <a-asset-item
           id="glassItem1"
-          src="../assets/glass-trash/glass_bottle.glb"
+          src="../assets/glass-trash/simple_glass_cup.glb"
         ></a-asset-item>
 
         <a-asset-item
           id="glassItem2"
-          src="../assets/glass-trash/simple_glass_cup.glb"
+          src="../assets/glass-trash/low_poly_wine_bottle.glb"
         ></a-asset-item>
 
         <a-asset-item
@@ -195,10 +195,10 @@
 
             document.querySelector("a-scene").appendChild(trash);
           }
-        }; 
+        };
 
-        createTrash("#glassItem1", 20, "0.2 0.2 0.2", -0.4, "random");
-        createTrash("#glassItem2", 15, "0.15 0.15 0.15", 0.5, "random");
+        createTrash("#glassItem1", 20, "0.2 0.2 0.2", 0.4, "random");
+        createTrash("#glassItem2", 15, "0.005 0.005 0.005", -0.2, "random");
       </script>
     </a-scene>
   </body>
