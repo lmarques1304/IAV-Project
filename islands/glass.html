@@ -18,11 +18,12 @@
   <body oncontextmenu="return false">
     <a-scene physics="gravity: -9.8; debug: false" game-manager island-setup>
       <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/glass_sky.jpeg">
+
         <a-asset-item
           id="glassItem1"
           src="../assets/glass-trash/simple_glass_cup.glb"
         ></a-asset-item>
-
         <a-asset-item
           id="glassItem2"
           src="../assets/glass-trash/wine_bottle.glb"
@@ -38,7 +39,6 @@
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
-
         <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
 
         <a-asset-item
@@ -53,11 +53,18 @@
           id="decorTree"
           src="../assets/glass-trash/low_poly_tree.glb"
         ></a-asset-item>
+
+        <a-asset-item
+          id="crystalModel"
+          src="../assets/decorations/crystal.glb"
+        ></a-asset-item>
+
       </a-assets>
 
       <a-entity id="defaultLight"></a-entity>
       <a-entity id="sunLight" position="1 1 0"></a-entity>
-      <a-sky color="#87CEEB"></a-sky>
+      
+      <a-sky src="#skyTexture"></a-sky>
 
       <a-light
         type="point"
@@ -127,10 +134,10 @@
       <a-box
         class="ground"
         position="0 -1 0"
-        scale="60 60 1"
+        scale="10000 10000 1"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Grass005_1K-JPG/Grass005_1K-JPG_Color.jpg"
-        repeat="60 60"
+        repeat="10000 10000"
         static-body
       >
       </a-box>
@@ -157,20 +164,31 @@
         random-spawner="model: #decorRocks; count: 10; scale: 1 1 1; areaSize: 45; yPos: 0"
       ></a-entity>
 
-      <!-- <a-entity
-        random-spawner="model: #glassItem1; count: 20; scale: 0.2 0.2 0.2; yPos: -0.4; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #glassItem2; count: 20; scale: 1 1 1; yPos: 2; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #glassItem3; count: 15; scale: 0.15 0.15 0.15; yPos: 0.5; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity> -->
+      <a-entity 
+        gltf-model="#crystalModel" 
+        position="-120 -5 -80" 
+        scale="50 70 50" 
+        rotation="0 45 0">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#crystalModel" 
+        position="150 -10 20" 
+        scale="60 90 60" 
+        rotation="0 -30 10">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#crystalModel" 
+        position="10 -8 180" 
+        scale="80 100 80" 
+        rotation="10 90 0">
+      </a-entity>
 
       <script>
         const sandWidth = 55;
         const sandHeight = 55;
-        const sandOffsetZ = 0; // Função genérica para criar lixo na ilha
+        const sandOffsetZ = 0;
 
         const createTrash = (modelId, count, scale, yPos, rotationType) => {
           const scene = document.querySelector("a-scene");
