@@ -8,15 +8,46 @@ AFRAME.registerComponent("random-spawner", {
     yPos: { type: "number", default: 0 },
     rotationType: { type: "string", default: "randomY" },
     isGrabbable: { type: "boolean", default: false },
+    minDistance: { type: "number", default: 1 },
   },
 
   init: function () {
+    const player = this.el.sceneEl.querySelector("#player");
+    const bin = this.el.sceneEl.querySelector("#bin");
+    const binPosition = bin ? bin.getAttribute("position") : null;
+
     const createObject = () => {
       const el = document.createElement("a-entity");
+      // Get up-to-date player position for each object created
+      const playerPosition = player.getAttribute("position");
+
+      let x, z;
+      let tooClose;
+      let attempts = 0;
+      const maxAttempts = 20;
+
+      do {
+        x = (Math.random() - 0.5) * this.data.areaSize;
+        z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
+        attempts++;
+
+        const distToPlayer = Math.hypot(x - playerPosition.x, z - playerPosition.z);
+        
+        let distToBin = Infinity;
+        if (binPosition) {
+          distToBin = Math.hypot(x - binPosition.x, z - binPosition.z);
+        }
+
+        tooClose = distToPlayer < this.data.minDistance || distToBin < this.data.minDistance;
+
+      } while (tooClose && attempts < maxAttempts);
+
+      if (tooClose) {
+        console.warn(`[random-spawner]: Could not find a suitable position for an object after ${maxAttempts} attempts. Skipping this spawn.`);
+        return null;
+      }
 
       // Position
-      const x = (Math.random() - 0.5) * this.data.areaSize;
-      const z = (Math.random() - 0.5) * this.data.areaSize + this.data.offsetZ;
       el.setAttribute("position", `${x} ${this.data.yPos} ${z}`);
       el.setAttribute("scale", this.data.scale);
 
@@ -44,7 +75,10 @@ AFRAME.registerComponent("random-spawner", {
 
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < this.data.count; i++) {
-      fragment.appendChild(createObject());
+      const newEl = createObject();
+      if (newEl) {
+        fragment.appendChild(newEl);
+      }
     }
     this.el.sceneEl.appendChild(fragment);
   },
