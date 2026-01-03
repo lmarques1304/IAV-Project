@@ -30,19 +30,21 @@ AFRAME.registerComponent("final-bin-check", {
 
         // Verifica se o tipo bate certo (Ex: metal == metal)
         if (itemType === this.data.targetType) {
-          if (hitEl.parentNode) {
-            // Remove o objeto
-            hitEl.parentNode.removeChild(hitEl);
-            
-            // Toca o som de sucesso (se houver a entidade de som definida no HTML)
-            const soundEntity = document.querySelector("#garbage-throw-sound");
-            if (soundEntity && soundEntity.components.sound) {
-              soundEntity.components.sound.playSound();
-            }
+          setTimeout(() => {
+            if (hitEl.parentNode) {
+              // Remove o objeto
+              hitEl.parentNode.removeChild(hitEl);
+              
+              // Toca o som de sucesso (se houver a entidade de som definida no HTML)
+              const soundEntity = document.querySelector("#garbage-throw-sound");
+              if (soundEntity && soundEntity.components.sound) {
+                soundEntity.components.sound.playSound();
+              }
 
-            // Avisa o manager para subir a pontuação
-            this.el.sceneEl.emit("garbage-success");
-          }
+              // Avisa o manager para subir a pontuação
+              this.el.sceneEl.emit("garbage-success");
+            }
+          }, 0);
         } else {
           console.log("Wrong bin! Item is " + itemType + ", Bin needs " + this.data.targetType);
         }
