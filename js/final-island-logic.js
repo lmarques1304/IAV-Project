@@ -22,6 +22,7 @@ AFRAME.registerComponent("final-bin-check", {
   },
   init: function () {
     this.el.addEventListener("collide", (e) => {
+      console.log("Collision detected with:", e.detail.body.el);
       const hitEl = e.detail.body ? e.detail.body.el : null;
 
       // Verifica se é um objeto agarrável

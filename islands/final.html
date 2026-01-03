@@ -89,7 +89,6 @@
         gltf-model="../assets/Final/floating_island.glb"
         position="0 -130 0"
         scale="90 40 90"
-        static-body="shape: mesh;"
       >
       </a-entity>
 
@@ -133,7 +132,7 @@
         gltf-model="#plasticBinModel"
         position="-10 -107 -60"
         scale="10 11 10"
-        static-body
+        static-body="shape: box"
         final-bin-check="targetType: plastic"
       ></a-entity>
 
@@ -274,6 +273,16 @@
         >
         </a-entity>
       </a-entity>
+
+      <a-plane
+        class="ground"
+        position="0 -107 0"
+        rotation="-90 0 0"
+        width="140"
+        height="140"
+        static-body
+        visible="false"
+      ></a-plane>
     </a-scene>
   </body>
 </html>
