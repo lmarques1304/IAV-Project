@@ -128,22 +128,39 @@
       ></a-entity>
 
       <a-entity
-        id="bin-plastic"
+        id="bin-plastic-visual"
         gltf-model="#plasticBinModel"
         position="-10 -107 -55"
         scale="10 10 10"
+        static-body="shape: hull"> 
+      </a-entity>
+
+      <a-box
+        id="bin-plastic-sensor"
+        position="-10 -102 -55"
+        scale="7 10 7"
         static-body
-        final-bin-check="targetType: plastic"
-      ></a-entity>
+        visible="false"
+        final-bin-check="targetType: plastic">
+      </a-box>
+
 
       <a-entity
-        id="bin-organic"
+        id="bin-organic-visual"
         gltf-model="#organicBinModel"
         position="25 -103 -60"
         scale="5 5 5"
+        static-body="shape: hull">
+      </a-entity>
+
+      <a-box
+        id="bin-organic-sensor"
+        position="25 -103 -60"
+        scale="4 3 10"
+        visible="false"
         static-body
-        final-bin-check="targetType: organic"
-      ></a-entity>
+        final-bin-check="targetType: organic">
+      </a-box>
 
       <a-entity
         id="bin-metal"
@@ -249,7 +266,7 @@
         id="player"
         position="0 -95 0"
         movement-controls="fly: false; speed: 2"
-        stay-in-bounds="xRange: 55; zRange: 55"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
         <a-camera position="0 1.6 0">
           <a-entity
@@ -276,10 +293,10 @@
 
       <a-plane
         class="ground"
-        position="0 -105 0"
+        position="0 -104 0"
         rotation="-90 0 0"
-        width="140"
-        height="140"
+        width="160"
+        height="160"
         static-body
         visible="false"
       ></a-plane>
