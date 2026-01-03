@@ -18,7 +18,7 @@
   </head>
 
   <body>
-    <a-scene physics="gravity: -9.8; debug: false" final-island-manager>
+    <a-scene physics="gravity: -9.8; debug: false" final-island-manager island-setup>
       <a-assets>
         <a-asset-item
           id="plasticBinModel"
@@ -245,7 +245,7 @@
       <a-entity
         id="player"
         position="0 -95 0"
-        movement-controls="fly: false; speed: 5"
+        movement-controls="fly: false; speed: 2"
         stay-in-bounds="xRange: 55; zRange: 55"
       >
         <a-camera position="0 1.6 0">
