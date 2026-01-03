@@ -40,7 +40,7 @@
 
         <a-asset-item
           id="organicBinModel"
-          src="../assets/metal-trash/trash_can.glb"
+          src="../assets/organic-trash/compost_bin.glb"
         ></a-asset-item>
 
         <a-asset-item
@@ -89,7 +89,7 @@
         gltf-model="../assets/Final/floating_island.glb"
         position="0 -130 0"
         scale="90 40 90"
-        static-body
+        static-body="shape: mesh;"
       >
       </a-entity>
 
@@ -140,7 +140,7 @@
       <a-entity
         id="bin-organic"
         gltf-model="#organicBinModel"
-        position="20 -107 -60"
+        position="20 -105 -60"
         scale="5 5 5"
         static-body
         final-bin-check="targetType: organic"
