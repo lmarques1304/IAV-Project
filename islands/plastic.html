@@ -17,6 +17,8 @@
   <body oncontextmenu="return false">
     <a-scene physics="gravity: -9.8; debug: false" game-manager island-setup>
       <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/plastic_sky.jpg">
+
         <a-asset-item
           id="palmModel"
           src="../assets/textures/Trees/Palm.glb"
@@ -37,6 +39,7 @@
           id="binModel"
           src="../assets/bins/plastic-bin.glb"
         ></a-asset-item>
+        
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
@@ -65,9 +68,15 @@
           id="beachBall"
           src="../assets/beach/beach_ball.glb"
         ></a-asset-item>
+
+        <a-asset-item
+          id="decorPlastic"
+          src="../assets/decorations/light_house.glb"
+        ></a-asset-item>
+
       </a-assets>
 
-      <a-sky color="#87CEEB"></a-sky>
+      <a-sky src="#skyTexture"></a-sky>
 
       <a-light
         type="point"
@@ -138,13 +147,14 @@
       <a-box
         class="ground"
         position="0 -1 0"
-        scale="60 60 1"
+        scale="10000 10000 1"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
-        repeat="60 60"
+        repeat="10000 10000"
         static-body
       >
       </a-box>
+
       <a-plane
         id="ocean"
         position="0 -1 0"
@@ -158,6 +168,12 @@
       </a-plane>
 
       <a-entity
+        gltf-model="#decorPlastic"
+        position="25 -1 -25"
+        scale="8 8 8"
+        rotation="0 -45 0"
+      ></a-entity>
+      <a-entity
         random-spawner="model: #palmModel; count: 10; scale: 2 2 2; yPos: -0.5"
       ></a-entity>
       <a-entity
@@ -170,22 +186,13 @@
         random-spawner="model: #palmModel; count: 4; scale: 4 4 4; yPos: -0.5"
       ></a-entity>
 
-      <!-- <a-entity
-        random-spawner="model: #plasticItem1; count: 30; scale: 0.1 0.1 0.1; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #plasticItem2; count: 30; scale: 2 2 2; yPos: -0.4; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #plasticItem3; count: 20; scale: 3 3 3; yPos: -0.2; rotationType: random; isGrabbable: true; physics: dynamic"
-      ></a-entity> -->
-
       <a-entity
         random-spawner="model: #surfboard; count: 4; scale: 0.1 0.1 0.1; yPos: -0.5"
       ></a-entity>
       <a-entity
         random-spawner="model: #castle; count: 4; scale: 0.05 0.05 0.05; yPos: -0.5"
       ></a-entity>
+      
       <a-entity
         position="15 -0.5 -15"
         rotation="0 -45 0"

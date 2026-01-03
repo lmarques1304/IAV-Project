@@ -14,17 +14,16 @@
     <script src="../js/random-spawner.js"></script>
   </head>
 
-   
   <body oncontextmenu="return false">
-       
     <a-scene
       physics="gravity: -9.8; debug: false"
-      fog="type: exponential; color: #584c42; density: 0.03;"
+      fog="type: exponential; color: #584c42; density: 0.01;" 
       game-manager
       island-setup
     >
-           
       <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/metal_sky.jpg">
+
         <a-asset-item
           id="decorWasher"
           src="../assets/eletronic-trash/washing_machine.glb"
@@ -50,6 +49,11 @@
           src="../assets/metal-trash/trash_can.glb"
         ></a-asset-item>
 
+        <a-asset-item
+          id="decorBuilding"
+          src="../assets/decorations/cyberpunk_skyscraper.glb"
+        ></a-asset-item>
+
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
@@ -67,7 +71,6 @@
         class="clickable"
         navigate-on-click="url: organic.html"
       >
-               
         <a-sphere
           radius="1"
           color="#00FF00"
@@ -77,7 +80,6 @@
           event-set__hoveroff="material.color: #00FF00"
         >
         </a-sphere>
-
         <a-text
           value="IR PARA ILHA ORGÂNICA"
           align="center"
@@ -88,7 +90,7 @@
         ></a-text>
       </a-entity>
 
-      <a-sky color="#586f7c"></a-sky>
+      <a-sky src="#skyTexture"></a-sky>
 
       <a-light
         type="point"
@@ -105,7 +107,7 @@
       >
         <a-camera position="0 0.5 0">
           <a-entity
-            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2 positional: false"
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
           ></a-entity>
         </a-camera>
 
@@ -159,10 +161,10 @@
       <a-box
         class="ground"
         position="0 -1 0"
-        scale="60 60 1"
+        scale="10000 10000 1"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
-        repeat="60 60"
+        repeat="10000 10000"
         static-body
       >
       </a-box>
@@ -179,6 +181,27 @@
       >
       </a-plane>
 
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="-120 -5 -100" 
+        scale="15 25 15" 
+        rotation="0 45 0">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="150 -5 50" 
+        scale="20 35 20" 
+        rotation="0 -30 0">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="0 -5 180" 
+        scale="17.5 30 17.5" 
+        rotation="0 90 0">
+      </a-entity>
+
       <a-entity
         random-spawner="model: #decorWasher; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
       ></a-entity>
@@ -188,13 +211,6 @@
       <a-entity
         random-spawner="model: #decorFence; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: -0.5"
       ></a-entity>
-
-      <!-- <a-entity
-        random-spawner="model: #metalItem1; count: 30; scale: 0.09 0.2 0.09; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity>
-      <a-entity
-        random-spawner="model: #metalItem2; count: 30; scale: 0.015 0.05 0.015; yPos: -0.4; rotationType: lying; isGrabbable: true; physics: dynamic"
-      ></a-entity> -->
 
       <script>
         const sandWidth = 55;
@@ -228,9 +244,9 @@
 
             document.querySelector("a-scene").appendChild(trash);
           }
-        }; // Parafusos (scale ajustado para 0.09 0.09 0.09)
+        };
 
-        createMetalTrash("#metalItem1", 40, "0.09 0.2 0.09", -0.4, "lying"); // Latas/Copos de metal (scale ajustado para 0.015 0.015 0.015)
+        createMetalTrash("#metalItem1", 40, "0.09 0.2 0.09", -0.4, "lying");
         createMetalTrash("#metalItem2", 30, "0.015 0.05 0.015", -0.4, "lying");
       </script>
     </a-scene>
