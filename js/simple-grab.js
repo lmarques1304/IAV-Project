@@ -33,7 +33,7 @@ AFRAME.registerComponent("simple-grab", {
     // 4. Find the closest object that is ALSO within a strict distance
     let closestEl = null;
     let closestDistance = Infinity;
-    const MAX_GRAB_DISTANCE = 1; // Maximum reach in meters (prevents "Force Grab")
+    const MAX_GRAB_DISTANCE = 10; // Maximum reach in meters (prevents "Force Grab")
 
     const handPos = new THREE.Vector3();
     this.el.object3D.getWorldPosition(handPos);
@@ -65,7 +65,7 @@ AFRAME.registerComponent("simple-grab", {
       // Highlight new
       this.hoveredEl = closestEl;
       if (this.hoveredEl) {
-        this.setEmissive(this.hoveredEl, 0xff0000); // Red
+        this.setEmissive(this.hoveredEl, 0x0000ff); // Blue
       }
     }
   },

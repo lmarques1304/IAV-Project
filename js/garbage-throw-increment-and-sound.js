@@ -63,13 +63,25 @@ AFRAME.registerComponent("game-manager", {
       case "plastic.html":
         nextPage = "metal.html";
         break;
+      case "plastic":
+        nextPage = "metal.html";
+        break;
       case "metal.html":
+        nextPage = "glass.html";
+        break;
+      case "metal":
         nextPage = "glass.html";
         break;
       case "glass.html":
         nextPage = "organic.html";
         break;
+      case "glass":
+        nextPage = "organic.html";
+        break;
       case "organic.html":
+        window.location.href = "final.html";
+        return;
+        case "organic":
         window.location.href = "final.html";
         return;
     }
