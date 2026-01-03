@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
 
-    <script src="../js/game-logic.js"></script>
     <script src="../js/final-island-logic.js"></script>
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
@@ -97,9 +96,12 @@
       
       <a-assets>
         <a-asset-item id="plasticBinModel" src="../assets/bins/plastic-bin.glb"></a-asset-item>
-        <a-asset-item id="scifiBinModel" src="../assets/Final/sci_fi_trash_can.glb"></a-asset-item>
-        <a-asset-item id="greenBinModel" src="../assets/Final/green_glass_recycling_bin.glb"></a-asset-item>
-        <a-asset-item id="metalBinModel" src="../assets/metal-trash/trash_can.glb"></a-asset-item>
+        
+        <a-asset-item id="metalBinModel" src="../assets/metal-trash/trash_can.glb"></a-asset-item> 
+        
+        <a-asset-item id="glassBinModel" src="../assets/glass-trash/glass_jar.glb"></a-asset-item>
+        
+        <a-asset-item id="organicBinModel" src="../assets/metal-trash/trash_can.glb"></a-asset-item>
 
         <a-asset-item id="metalRuler" src="../assets/Final/metal_ruler.glb"></a-asset-item>
         <a-asset-item id="metalBucket" src="../assets/Final/metal_bucket.glb"></a-asset-item>
@@ -142,9 +144,12 @@
       <a-entity gltf-model="../assets/Final/purple_tree.glb" position="40 -110 -30" scale="7 10 7" static-body></a-entity>
 
       <a-entity id="bin-plastic" gltf-model="#plasticBinModel" position="-10 -107 -60" scale="10 11 10" static-body final-bin-check="targetType: plastic"></a-entity>
-      <a-entity id="bin-organic" gltf-model="#metalBinModel" position="20 -107 -60" scale="5 5 5" static-body final-bin-check="targetType: organic"></a-entity>
-      <a-entity id="bin-metal" gltf-model="#scifiBinModel" position="0 -107 -60" scale="9 9 9" static-body final-bin-check="targetType: metal"></a-entity>
-      <a-entity id="bin-glass" gltf-model="#greenBinModel" position="10 -100 -60" scale="7 7 7" static-body final-bin-check="targetType: glass"></a-entity>
+      
+      <a-entity id="bin-organic" gltf-model="#organicBinModel" position="20 -107 -60" scale="5 5 5" static-body final-bin-check="targetType: organic"></a-entity>
+      
+      <a-entity id="bin-metal" gltf-model="#metalBinModel" position="0 -107 -60" scale="5 5 5" static-body final-bin-check="targetType: metal"></a-entity>
+      
+      <a-entity id="bin-glass" gltf-model="#glassBinModel" position="10 -107 -60" scale="5 5 5" static-body final-bin-check="targetType: glass"></a-entity>
 
       <a-entity position="5 -88 -60" rotation="10 0 0">
         <a-plane 
@@ -195,7 +200,7 @@
 
       <a-entity 
         gltf-model="#plasticBag" 
-        position="25 -98.5 30" 
+        position="18 -100 15" 
         scale="5 5 5" 
         class="grabbable" 
         data-type="plastic" 
@@ -223,7 +228,6 @@
       <a-entity id="player" movement-controls="fly: false; speed: 0.2" stay-in-bounds="xRange: 29; zRange: 29">
         <a-camera position="0 10 0">
           <a-entity sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"></a-entity>
-          
           <a-cursor fuse="false" raycaster="objects: .clickable" color="yellow" scale="0.5 0.5 0.5"></a-cursor>
         </a-camera>
         
