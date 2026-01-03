@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projeto AIV - Ilha Final Completa</title>
+
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
+    <script src="../js/final-island-logic.js"></script>
+    <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
+  </head>
+
+  <body>
+    <a-scene physics="gravity: -9.8; debug: false" final-island-manager>
+      <a-assets>
+        <a-asset-item
+          id="plasticBinModel"
+          src="../assets/bins/plastic-bin.glb"
+        ></a-asset-item>
+
+        <a-asset-item
+          id="metalBinModel"
+          src="../assets/metal-trash/trash_can.glb"
+        ></a-asset-item>
+
+        <a-asset-item
+          id="glassBinModel"
+          src="../assets/glass-trash/glass_jar.glb"
+        ></a-asset-item>
+
+        <a-asset-item
+          id="organicBinModel"
+          src="../assets/metal-trash/trash_can.glb"
+        ></a-asset-item>
+
+        <a-asset-item
+          id="metalRuler"
+          src="../assets/Final/metal_ruler.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="metalBucket"
+          src="../assets/Final/metal_bucket.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="plasticBag"
+          src="../assets/Final/plastic_bag_rigged.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="glassCup"
+          src="../assets/Final/free_glass.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="organicFish"
+          src="../assets/Final/fish_skeleton.glb"
+        ></a-asset-item>
+
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
+
+      <a-sky
+        id="main-sky"
+        src="../assets/Final/Final_Sky.jpg"
+        rotation="0 -90 0"
+      ></a-sky>
+      <a-entity light="type: ambient; intensity: 1; color: #ffffff"></a-entity>
+      <a-entity
+        light="type: directional; intensity: 0.8; color: #ffffff"
+        position="5 10 5"
+      ></a-entity>
+
+      <a-entity
+        id="garbage-throw-sound"
+        sound="src: #bin-sound; positional: false; volume: 1.5"
+      ></a-entity>
+
+      <a-entity
+        id="floatingIsland"
+        class="ground"
+        gltf-model="../assets/Final/floating_island.glb"
+        position="0 -130 0"
+        scale="90 40 90"
+      >
+      </a-entity>
+
+      <a-box
+        position="0 -131 0"
+        width="100"
+        height="1"
+        depth="100"
+        visible="false"
+        static-body
+      >
+      </a-box>
+
+      <a-entity
+        gltf-model="../assets/Final/mushroom__tree.glb"
+        position="15 -115 15"
+        scale="7 10 7"
+        static-body
+      ></a-entity>
+      <a-entity
+        gltf-model="../assets/Final/mushroom__tree.glb"
+        position="-20 -115 -10"
+        scale="7 10 7"
+        static-body
+      ></a-entity>
+      <a-entity
+        gltf-model="../assets/Final/purple_tree.glb"
+        position="-30 -110 20"
+        scale="7 10 7"
+        static-body
+      ></a-entity>
+      <a-entity
+        gltf-model="../assets/Final/purple_tree.glb"
+        position="40 -110 -30"
+        scale="7 10 7"
+        static-body
+      ></a-entity>
+
+      <a-entity
+        id="bin-plastic"
+        gltf-model="#plasticBinModel"
+        position="-10 -107 -60"
+        scale="10 11 10"
+        static-body
+        final-bin-check="targetType: plastic"
+      ></a-entity>
+
+      <a-entity
+        id="bin-organic"
+        gltf-model="#organicBinModel"
+        position="20 -107 -60"
+        scale="5 5 5"
+        static-body
+        final-bin-check="targetType: organic"
+      ></a-entity>
+
+      <a-entity
+        id="bin-metal"
+        gltf-model="#metalBinModel"
+        position="0 -107 -60"
+        scale="5 5 5"
+        static-body
+        final-bin-check="targetType: metal"
+      ></a-entity>
+
+      <a-entity
+        id="bin-glass"
+        gltf-model="#glassBinModel"
+        position="10 -107 -60"
+        scale="5 5 5"
+        static-body
+        final-bin-check="targetType: glass"
+      ></a-entity>
+
+      <a-entity position="5 -88 -60" rotation="10 0 0">
+        <a-plane
+          width="14"
+          height="6"
+          color="#222"
+          opacity="0.9"
+          class="clickable"
+          info-sign-logic
+        >
+        </a-plane>
+
+        <a-text
+          id="placard-text"
+          value="Welcome to the final island. We have one last task for you to see if you retained the information during this journey."
+          align="center"
+          width="12"
+          position="0 0.5 0.1"
+          wrap-count="30"
+        >
+        </a-text>
+
+        <a-text
+          id="score-counter"
+          value="Items collected: 0/5"
+          align="center"
+          width="10"
+          color="#FFFF00"
+          position="0 -2 0.1"
+        >
+        </a-text>
+      </a-entity>
+
+      <a-entity
+        gltf-model="#metalRuler"
+        position="-18 -103 5"
+        scale="0.3 0.3 0.3"
+        class="grabbable"
+        data-type="metal"
+        dynamic-body="mass: 5; shape: box"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#metalBucket"
+        position="15 -104 -15"
+        scale="1.5 1.5 1.5"
+        class="grabbable"
+        data-type="metal"
+        dynamic-body="mass: 5; shape: box"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#plasticBag"
+        position="18 -100 15"
+        scale="5 5 5"
+        class="grabbable"
+        data-type="plastic"
+        dynamic-body="mass: 5; shape: box"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#glassCup"
+        position="-15 -102 -18"
+        scale="15 15 15"
+        class="grabbable"
+        data-type="glass"
+        dynamic-body="mass: 5; shape: box"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#organicFish"
+        position="2 -103 20"
+        scale="2.5 2.5 2.5"
+        class="grabbable"
+        data-type="organic"
+        dynamic-body="mass: 5; shape: box"
+      >
+      </a-entity>
+
+      <a-entity
+        id="player"
+        position="0 -95 0"
+        movement-controls="fly: false; speed: 5"
+        stay-in-bounds="xRange: 55; zRange: 55"
+      >
+        <a-camera position="0 1.6 0">
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
+          ></a-entity>
+        </a-camera>
+
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
+        </a-entity>
+
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.7"
+          simple-grab
+        >
+        </a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>

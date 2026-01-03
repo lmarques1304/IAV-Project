@@ -3,42 +3,288 @@
   <head>
     <meta charset="UTF-8" />
     <title>Recycle Islands VR - Organic Island</title>
+
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
     <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
-  <body>
-    <a-scene>
+  <body oncontextmenu="return false">
+    <a-scene physics="gravity: -9.8; debug: false" island-setup game-manager>
+      <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/organic_sky.jpg" />
 
-      <a-sky></a-sky>
+        <a-asset-item
+          id="palmModel"
+          src="../assets/textures/Trees/Palm.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorationStatue"
+          src="../assets/decorations/banana_statue.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorationPlants"
+          src="../assets/decorations/plants_foliage.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorationBush"
+          src="../assets/decorations/stylized_bush.glb"
+        ></a-asset-item>
 
-      <a-entity id="defaultLight"></a-entity>
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+        <a-asset-item
+          id="bgDecor1"
+          src="../assets/decorations/cursed_apple_tree.glb"
+        ></a-asset-item>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 2" wasd-controls="acceleration: 20">
-        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+        <a-asset-item
+          id="bgDecor2"
+          src="../assets/decorations/statue.glb"
+        ></a-asset-item>
 
-        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
+        <a-asset-item
+          id="bgDecor3"
+          src="../assets/decorations/mushrrom.glb"
+        ></a-asset-item>
 
-        <a-entity id="leftLaser" 
-                  laser-controls="hand: left"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
+        <a-asset-item
+          id="organicItem1"
+          src="../assets/organic-trash/apple_with_a_bite.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="organicItem2"
+          src="../assets/organic-trash/banana.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="organicItem3"
+          src="../assets/organic-trash/rotten_dirty_organic_waste.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="binModel"
+          src="../assets/organic-trash/compost_bin.glb"
+        ></a-asset-item>
 
-        <a-entity id="rightLaser" 
-                  laser-controls="hand: right"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
+        <audio
+          id="background-music"
+          src="../assets/sounds/background-music.wav"
+          preload="auto"
+        ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
 
+      <a-light type="ambient" color="#FFEFD5" intensity="0.7"></a-light>
+      <a-light
+        id="sunLight"
+        type="directional"
+        color="#FFF"
+        intensity="1.0"
+        position="-10 20 10"
+      >
+      </a-light>
+
+      <a-sky src="#skyTexture"></a-sky>
+
+      <a-entity
+        id="player"
+        movement-controls="fly: false; speed: 0.3"
+        stay-in-bounds="xRange: 28; zRange: 28"
+      >
+        <a-camera position="0 1.6 0">
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
+          ></a-entity>
+        </a-camera>
+
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.2"
+          simple-grab
+        ></a-entity>
+
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.2"
+          simple-grab
+        ></a-entity>
       </a-entity>
 
-      <a-plane class="ground"
-               rotation="-90 0 0">
-      </a-plane>
+      <a-entity id="counter-display" position="0 2 -5">
+        <a-plane
+          color="#2E8B57"
+          opacity="0.8"
+          width="2.2"
+          height="0.6"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 4"
+          position="0 0 0"
+        ></a-entity>
 
+        <a-entity
+          id="info-panel"
+          position="0 2 -4"
+          visible="false">
+
+          <a-plane
+            color="#000000"
+            opacity="0.7"
+            width="4"
+            height="2"
+          ></a-plane>
+
+          <a-text
+            id="info-text"
+            value=""
+            align="center"
+            color="#FFFFFF"
+            width="3.6"
+            position="0 0 0.01"
+          ></a-text>
+        </a-entity>
+      </a-entity>
+
+      <a-entity position="0 0 -4" id="bin">
+        <a-entity gltf-model="#binModel"></a-entity>
+
+        <a-cylinder
+          visible="false"
+          position="0 0.5 0"
+          radius="0.4"
+          height="0.8"
+          static-body="shape: cylinder"
+          delete-on-contact
+        >
+        </a-cylinder>
+      </a-entity>
+
+      <a-entity
+        gltf-model="#decorationStatue"
+        position="3 -0.5 -6"
+        rotation="0 -45 0"
+        scale="1 1 1"
+        static-body="shape: box"
+      ></a-entity>
+
+      <a-entity
+        sound="src: #bin-sound; volume: 1; positional: false"
+        id="garbage-throw-sound"
+      ></a-entity>
+
+      <a-box
+        class="ground"
+        position="0 -1 0"
+        scale="50 50 1"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        repeat="50 50"
+        roughness="1"
+        metalness="0"
+        static-body
+      ></a-box>
+
+      <a-plane
+        id="ocean"
+        position="0 -1.2 0"
+        width="100"
+        height="100"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
+        color="#1da2d8"
+        repeat="100 100"
+        static-body
+      ></a-plane>
+
+      <a-entity
+        gltf-model="#bgDecor1"
+        position="-100 -5 -80"
+        scale="4 5 4"
+        rotation="0 45 0"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#bgDecor2"
+        position="120 -5 50"
+        scale="100 100 100"
+        rotation="0 250 0"
+      >
+      </a-entity>
+
+      <a-entity
+        gltf-model="#bgDecor3"
+        position="10 -5 150"
+        scale="50 50 50"
+        rotation="0 90 0"
+      >
+      </a-entity>
+
+      <a-entity
+        random-spawner="model: #decorationPlants; count: 10; scale: 1 1 1; yPos: 0; areaSize: 50"
+      ></a-entity>
+
+      <a-entity
+        random-spawner="model: #decorationBush; count: 3; scale: 1.5 1.5 1.5; yPos: 0; areaSize: 50"
+      ></a-entity>
+
+      <a-entity
+        random-spawner="model: #palmModel; count: 15; scale: 3 3 3; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 4; scale: 4 4 4; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 8; scale: 2.5 2.5 2.5; yPos: -0.5"
+      ></a-entity>
+
+      <script>
+        const sandWidth = 40;
+        const sandHeight = 40;
+        const sandOffsetZ = 0;
+
+        const createTrash = (modelId, count, scale, yPos, rotationType) => {
+          const scene = document.querySelector("a-scene");
+
+          for (let i = 0; i < count; i++) {
+            const trash = document.createElement("a-entity");
+
+            // Set Model
+            trash.setAttribute("gltf-model", modelId);
+
+            // Calculate Position
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            trash.setAttribute("position", { x: x, y: yPos, z: z });
+
+            // Set Scale
+            trash.setAttribute("scale", scale);
+
+            // Set Rotation
+            if (rotationType === "random") {
+              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            // PHYSICS & INTERACTION
+            trash.setAttribute("class", "grabbable");
+            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
+            scene.appendChild(trash);
+          }
+        };
+
+        createTrash("#organicItem1", 15, "0.15 0.15 0.15", 0, "lying");
+        createTrash("#organicItem2", 15, "0.005 0.005 0.005", 0, "random");
+        createTrash("#organicItem3", 10, "0.08 0.08 0.08", 0, "lying");
+      </script>
     </a-scene>
   </body>
 </html>

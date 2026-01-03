@@ -10,12 +10,15 @@
     <script src="../js/island.js"></script>
     <script src="../js/simple-grab.js"></script>
     <script src="../js/delete-on-contact.js"></script>
-    <script src="../js/garbage-throw-increment-and-sound.js" defer></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
-  <body>
-    <a-scene physics="gravity: -9.8; debug: false">
+  <body oncontextmenu="return false">
+    <a-scene physics="gravity: -9.8; debug: false" game-manager island-setup>
       <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/plastic_sky.jpg" />
+
         <a-asset-item
           id="palmModel"
           src="../assets/textures/Trees/Palm.glb"
@@ -36,15 +39,43 @@
           id="binModel"
           src="../assets/bins/plastic-bin.glb"
         ></a-asset-item>
+
         <audio
           id="background-music"
           src="../assets/sounds/background-music.wav"
           preload="auto"
         ></audio>
         <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+
+        <a-asset-item
+          id="beachBar"
+          src="../assets/beach/Bar.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="umbrella"
+          src="../assets/beach/Umbrella_and_chairs.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="surfboard"
+          src="../assets/beach/Surfboard.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="castle"
+          src="../assets/beach/Sand_castle.glb"
+        ></a-asset-item>
+        <a-asset-item id="crab" src="../assets/beach/Crab.glb"></a-asset-item>
+        <a-asset-item
+          id="beachBall"
+          src="../assets/beach/beach_ball.glb"
+        ></a-asset-item>
+
+        <a-asset-item
+          id="decorPlastic"
+          src="../assets/decorations/light_house.glb"
+        ></a-asset-item>
       </a-assets>
 
-      <a-sky color="#87CEEB"></a-sky>
+      <a-sky src="#skyTexture"></a-sky>
 
       <a-light
         type="point"
@@ -54,18 +85,21 @@
         position="0 20 0"
       ></a-light>
 
-      <!-- PLAYER -->
-      <a-entity id="player" movement-controls="fly: false; speed: 0.2">
+      <a-entity
+        id="player"
+        movement-controls="fly: false; speed: 0.2"
+        stay-in-bounds="xRange: 29; zRange: 29"
+      >
         <a-camera position="0 0.5 0">
           <a-entity
-            sound="src: #background-music; autoplay: true; loop: true; volume: 0.1 positional: false"
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
           ></a-entity>
         </a-camera>
 
         <a-entity
           id="left-hand"
           hand-controls="hand: left; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.8"
           simple-grab
         >
         </a-entity>
@@ -73,13 +107,12 @@
         <a-entity
           id="right-hand"
           hand-controls="hand: right; modelStyle: highPoly"
-          sphere-collider="objects: .grabbable; radius: 0.7"
+          sphere-collider="objects: .grabbable; radius: 0.8"
           simple-grab
         >
         </a-entity>
       </a-entity>
 
-      <!-- BIN AND COUNTER -->
       <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
         <a-plane
           color="#000000"
@@ -93,6 +126,28 @@
           text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
           position="0 0 0"
         ></a-entity>
+
+        <a-entity
+          id="info-panel"
+          position="0 2 -4"
+          visible="false">
+
+          <a-plane
+            color="#000000"
+            opacity="0.7"
+            width="4"
+            height="2"
+          ></a-plane>
+
+          <a-text
+            id="info-text"
+            value=""
+            align="center"
+            color="#FFFFFF"
+            width="3.6"
+            position="0 0 0.01"
+          ></a-text>
+        </a-entity>
       </a-entity>
 
       <a-entity
@@ -100,23 +155,23 @@
         gltf-model="#binModel"
         position="0 -0.5 -5"
         static-body
+        shape="box"
         delete-on-contact
       >
       </a-entity>
 
       <a-entity
-        sound="src: #bin-sound; volume: 1 positional: false"
+        sound="src: #bin-sound; volume: 1.4 positional: false"
         id="garbage-throw-sound"
       ></a-entity>
 
-      <!-- ISLAND -->
       <a-box
         class="ground"
         position="0 -1 0"
-        scale="60 60 1"
+        scale="50 50 1"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
-        repeat="60 60"
+        repeat="50 50"
         static-body
       >
       </a-box>
@@ -124,39 +179,47 @@
       <a-plane
         id="ocean"
         position="0 -1 0"
-        width="1000"
-        height="1000"
+        width="100"
+        height="100"
         rotation="-90 0 0"
         src="../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
-        repeat="1000 1000"
+        repeat="100 100"
         static-body
       >
       </a-plane>
 
-      <script>
-        const planeWidth = 45;
-        const planeHeight = 45;
-        const planeOffsetZ = 0;
+      <a-entity
+        gltf-model="#decorPlastic"
+        position="25 -1 -25"
+        scale="8 8 8"
+        rotation="0 -45 0"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 10; scale: 2 2 2; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 8; scale: 2.5 2.5 2.5; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 6; scale: 3.5 3.5 3.5; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #palmModel; count: 4; scale: 4 4 4; yPos: -0.5"
+      ></a-entity>
 
-        const addTrees = (count, scale) => {
-          for (let i = 0; i < count; i++) {
-            const tree = document.createElement("a-entity");
-            tree.setAttribute("gltf-model", "#palmModel");
-            tree.setAttribute("scale", `${scale} ${scale} ${scale}`);
-            const x = Math.random() * planeWidth - planeWidth / 2;
-            const z =
-              Math.random() * planeHeight - planeHeight / 2 + planeOffsetZ;
-            tree.setAttribute("position", `${x} -0.5 ${z}`);
-            tree.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
-            document.querySelector("a-scene").appendChild(tree);
-          }
-        };
+      <a-entity
+        random-spawner="model: #surfboard; count: 4; scale: 0.1 0.1 0.1; yPos: -0.5"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #castle; count: 4; scale: 0.05 0.05 0.05; yPos: -0.5"
+      ></a-entity>
 
-        addTrees(10, 2);
-        addTrees(8, 2.5);
-        addTrees(6, 3.5);
-        addTrees(4, 4);
-      </script>
+      <a-entity
+        position="15 -0.5 -15"
+        rotation="0 -45 0"
+        scale="3 3 3"
+        gltf-model="#beachBar"
+      ></a-entity>
 
       <script>
         const sandWidth = 55;
@@ -167,7 +230,6 @@
           for (let i = 0; i < count; i++) {
             const plastic = document.createElement("a-entity");
             plastic.setAttribute("gltf-model", modelId);
-
             const x = Math.random() * sandWidth - sandWidth / 2;
             const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
             plastic.setAttribute("position", `${x} ${yPos} ${z}`);
@@ -181,10 +243,8 @@
 
             // CRITICAL: Must have 'grabbable' class
             plastic.setAttribute("class", "grabbable");
-
             // Physics
             plastic.setAttribute("dynamic-body", "mass: 0.2; shape: auto");
-
             document.querySelector("a-scene").appendChild(plastic);
           }
         };

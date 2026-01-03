@@ -1,98 +1,132 @@
-AFRAME.registerComponent('simple-grab', {
+/* File: js/simple-grab.js */
+AFRAME.registerComponent("simple-grab", {
   init: function () {
     this.grabbedEl = null;
     this.hoveredEl = null;
 
-    // Bind event handlers
-    this.onHit = this.onHit.bind(this);
-    this.onHitEnd = this.onHitEnd.bind(this);
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
 
-    // 1. Listen for collisions (Hand touching object)
-    // Note: sphere-collider uses 'hit'/'hitend', aabb-collider uses 'hitstart'/'hitend'
-    // We listen to both to be safe.
-    this.el.addEventListener('hit', this.onHit);
-    this.el.addEventListener('hitstart', this.onHit);
-    this.el.addEventListener('hitend', this.onHitEnd);
+    // Controller buttons
+    this.el.addEventListener("triggerdown", this.onGrab);
+    this.el.addEventListener("gripdown", this.onGrab);
+    this.el.addEventListener("triggerup", this.onRelease);
+    this.el.addEventListener("gripup", this.onRelease);
 
-    // 2. Listen for controller buttons (Trigger or Grip)
-    this.el.addEventListener('triggerdown', this.onGrab);
-    this.el.addEventListener('gripdown', this.onGrab);
-
-    // 3. Listen for release
-    this.el.addEventListener('triggerup', this.onRelease);
-    this.el.addEventListener('gripup', this.onRelease);
-
-    // 4. Desktop/Mouse Support (Click to grab)
-    this.el.addEventListener('mousedown', this.onGrab);
-    this.el.addEventListener('mouseup', this.onRelease);
+    // Desktop/Mouse Support
+    this.el.addEventListener("mousedown", this.onGrab);
+    this.el.addEventListener("mouseup", this.onRelease);
   },
 
-  onHit: function (evt) {
-    // If we are already holding something, ignore new hits
+  tick: function () {
+    // 1. Don't look for new objects if already holding one
     if (this.grabbedEl) return;
 
-    // Get the first intersected element
-    const hitEl = evt.detail.intersectedEls ? evt.detail.intersectedEls[0] : evt.detail.el;
-    
-    if (!hitEl || !hitEl.classList.contains('grabbable')) return;
+    // 2. Get the collider component
+    const collider = this.el.components["sphere-collider"];
+    if (!collider) return;
 
-    // Highlight the object to show it's ready to be grabbed
-    if (this.hoveredEl !== hitEl) {
-      this.hoveredEl = hitEl;
-      this.savedColor = this.hoveredEl.getAttribute('material')?.color || 'white';
-      this.hoveredEl.setAttribute('material', 'color', '#FF0000'); // Turn RED on hover
+    // 3. Get list of objects the collider currently hits
+    // (A-Frame Extras uses 'els')
+    const intersectedEls = collider.els || [];
+
+    // 4. Find the closest object that is ALSO within a strict distance
+    let closestEl = null;
+    let closestDistance = Infinity;
+    const MAX_GRAB_DISTANCE = 1; // Maximum reach in meters (prevents "Force Grab")
+
+    const handPos = new THREE.Vector3();
+    this.el.object3D.getWorldPosition(handPos);
+
+    intersectedEls.forEach((el) => {
+      // Must be a valid element with the correct class
+      if (el && el.classList && el.classList.contains("grabbable")) {
+        // Calculate real distance from hand to object center
+        const objectPos = new THREE.Vector3();
+        el.object3D.getWorldPosition(objectPos);
+        const distance = handPos.distanceTo(objectPos);
+
+        // STHRICT CHECK: Ignore objects strictly outside our max reach
+        // This ignores huge bounding boxes triggering grabs from far away
+        if (distance < MAX_GRAB_DISTANCE && distance < closestDistance) {
+          closestDistance = distance;
+          closestEl = el;
+        }
+      }
+    });
+
+    // 5. Update Visuals (Red Highlight)
+    if (closestEl !== this.hoveredEl) {
+      // Un-highlight previous
+      if (this.hoveredEl) {
+        this.setEmissive(this.hoveredEl, 0x000000);
+      }
+
+      // Highlight new
+      this.hoveredEl = closestEl;
+      if (this.hoveredEl) {
+        this.setEmissive(this.hoveredEl, 0xff0000); // Red
+      }
     }
   },
 
-  onHitEnd: function () {
-    // Restore color when hand leaves
-    if (this.hoveredEl && !this.grabbedEl) {
-      this.hoveredEl.setAttribute('material', 'color', this.savedColor);
-      this.hoveredEl = null;
-    }
+  setEmissive: function (el, color) {
+    if (!el) return;
+    el.object3D.traverse((node) => {
+      // Only effect meshes (visible parts), not invisible helpers
+      if (node.isMesh && node.material) {
+        // Cloning material allows us to highlight ONE item without turning ALL items red
+        // (Performance note: For a simple game, this is fine. For massive games, use a shader)
+        if (!node.material.isCloned) {
+          node.material = node.material.clone();
+          node.material.isCloned = true;
+        }
+        node.material.emissive.setHex(color);
+        node.material.needsUpdate = true;
+      }
+    });
   },
 
   onGrab: function () {
-    // 1. Decide what to grab: either the hovered object OR ask the collider directly
-    let target = this.hoveredEl;
+    if (this.grabbedEl) return;
+    if (!this.hoveredEl) return; // Only grab if we are hovering a valid, close object
 
-    if (!target) {
-      // Fallback: Check collider directly if event was missed
-      const collider = this.el.components['sphere-collider'];
-      if (collider && collider.intersectedEls.length > 0) {
-        target = collider.intersectedEls.find(el => el.classList.contains('grabbable'));
-      }
+    this.grabbedEl = this.hoveredEl;
+
+    // Clear highlight
+    this.setEmissive(this.grabbedEl, 0x000000);
+
+    // Disable physics while holding
+    if (this.grabbedEl.getAttribute("dynamic-body")) {
+      this.grabbedEl.removeAttribute("dynamic-body");
+    }
+    if (this.grabbedEl.getAttribute("static-body")) {
+      this.grabbedEl.removeAttribute("static-body");
     }
 
-    if (!target) return; // Nothing to grab
-
-    this.grabbedEl = target;
-    
-    // Restore original color before grabbing
-    if (this.savedColor) {
-        this.grabbedEl.setAttribute('material', 'color', this.savedColor);
-    }
-
-    // 2. DISABLE PHYSICS so it doesn't fight the hand
-    this.grabbedEl.removeAttribute('dynamic-body');
-
-    // 3. Attach to hand
+    // Attach to hand
     this.el.object3D.attach(this.grabbedEl.object3D);
   },
 
   onRelease: function () {
     if (!this.grabbedEl) return;
 
-    // 1. Detach from hand and re-attach to scene
+    // Detach from hand, re-attach to scene
     this.el.sceneEl.object3D.attach(this.grabbedEl.object3D);
 
-    // 2. Re-enable physics
-    this.grabbedEl.setAttribute('dynamic-body', 'mass: 0.2; shape: auto');
+    // Re-enable physics
+    this.grabbedEl.setAttribute("dynamic-body", {
+      mass: 0.2,
+      shape: "auto",
+    });
 
-    // 3. Reset state
     this.grabbedEl = null;
     this.hoveredEl = null;
-  }
+  },
+
+  remove: function () {
+    if (this.grabbedEl) {
+      this.onRelease();
+    }
+  },
 });

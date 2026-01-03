@@ -4,41 +4,273 @@
     <meta charset="UTF-8" />
     <title>Recycle Islands VR - Metal Island</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="../js/blink-controls.js"></script>
-    <script src="../js/island-controls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+
     <script src="../js/island.js"></script>
+    <script src="../js/simple-grab.js"></script>
+    <script src="../js/delete-on-contact.js"></script>
+    <script src="../js/garbage-throw-increment-and-sound.js"></script>
+    <script src="../js/random-spawner.js"></script>
   </head>
 
-  <body>
-    <a-scene>
+  <body oncontextmenu="return false">
+    <a-scene
+      physics="gravity: -9.8; debug: false"
+      fog="type: exponential; color: #584c42; density: 0.01;" 
+      game-manager
+      island-setup
+    >
+      <a-assets>
+        <img id="skyTexture" src="../assets/Skyes/metal_sky.jpg">
 
-      <a-sky></a-sky>
+        <a-asset-item
+          id="decorWasher"
+          src="../assets/eletronic-trash/washing_machine.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorPipes"
+          src="../assets/metal-trash/industrial_pipes.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="decorFence"
+          src="../assets/metal-trash/rusty_fence.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="metalItem1"
+          src="../assets/metal-trash/screw.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="metalItem2"
+          src="../assets/metal-trash/old_metal_cup.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="binModel"
+          src="../assets/metal-trash/trash_can.glb"
+        ></a-asset-item>
 
-      <a-entity id="defaultLight"></a-entity>
-      <a-entity id="sunLight" position="1 1 0"></a-entity>
+        <a-asset-item
+          id="decorBuilding"
+          src="../assets/decorations/cyberpunk_skyscraper.glb"
+        ></a-asset-item>
 
-      <a-entity id="rig" movement-controls="fly: false; speed: 2" wasd-controls="acceleration: 20">
-        <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+        <audio
+          id="background-music"
+          src="../assets/sounds/background-music.wav"
+          preload="auto"
+        ></audio>
+        <audio id="bin-sound" src="../assets/sounds/bin-sound.wav"></audio>
+      </a-assets>
 
-        <a-entity id="leftHand"  oculus-touch-controls="hand: left"></a-entity>
-        <a-entity id="rightHand" oculus-touch-controls="hand: right"></a-entity>
-
-        <a-entity id="leftLaser" 
-                  laser-controls="hand: left"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
-
-        <a-entity id="rightLaser" 
-                  laser-controls="hand: right"
-                  teleport-controls="cameraRig: #rig; teleportOrigin: #camera">
-        </a-entity>
-
+      <a-entity
+        id="next-island-portal"
+        position="0 1 -15"
+        rotation="0 0 0"
+        scale="0 0 0"
+        visible="false"
+        class="clickable"
+        navigate-on-click="url: organic.html"
+      >
+        <a-sphere
+          radius="1"
+          color="#00FF00"
+          opacity="0.7"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
+          event-set__hoveron="material.color: #FFFFFF"
+          event-set__hoveroff="material.color: #00FF00"
+        >
+        </a-sphere>
+        <a-text
+          value="IR PARA ILHA ORGÂNICA"
+          align="center"
+          color="#000000"
+          position="0 0 1.1"
+          rotation="0 0 0"
+          width="5"
+        ></a-text>
       </a-entity>
 
-      <a-plane class="ground"
-               rotation="-90 0 0">
+      <a-sky src="#skyTexture"></a-sky>
+
+      <a-light
+        type="point"
+        color="#ffffff"
+        intensity="1"
+        distance="500"
+        position="0 20 0"
+      ></a-light>
+
+      <a-entity
+        id="player"
+        movement-controls="fly: false; speed: 0.2"
+        stay-in-bounds="xRange: 29; zRange: 29"
+      >
+        <a-camera position="0 0.5 0">
+          <a-entity
+            sound="src: #background-music; autoplay: true; loop: true; volume: 0.2; positional: false"
+          ></a-entity>
+        </a-camera>
+
+        <a-entity
+          id="left-hand"
+          hand-controls="hand: left; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.8"
+          simple-grab
+        >
+        </a-entity>
+
+        <a-entity
+          id="right-hand"
+          hand-controls="hand: right; modelStyle: highPoly"
+          sphere-collider="objects: .grabbable; radius: 0.8"
+          simple-grab
+        >
+        </a-entity>
+      </a-entity>
+
+      <a-entity id="counter-display" position="0 1.5 -5" scale="1.5 1.5 1.5">
+        <a-plane
+          color="#000000"
+          opacity="0.5"
+          width="2"
+          height="0.5"
+          position="0 0 -0.1"
+        ></a-plane>
+        <a-entity
+          id="counter"
+          text="value: Items collected: 0/10; color: #FFFFFF; align: center; width: 3.5"
+          position="0 0 0"
+        ></a-entity>
+
+        <a-entity
+          id="info-panel"
+          position="0 2 -4"
+          visible="false">
+
+          <a-plane
+            color="#000000"
+            opacity="0.7"
+            width="4"
+            height="2"
+          ></a-plane>
+
+          <a-text
+            id="info-text"
+            value=""
+            align="center"
+            color="#FFFFFF"
+            width="3.6"
+            position="0 0 0.01"
+          ></a-text>
+        </a-entity>
+      </a-entity>
+
+      <a-entity
+        id="bin"
+        gltf-model="#binModel"
+        position="0 -0.5 -5"
+        scale="0.5 0.5 0.5"
+        static-body
+        delete-on-contact
+      >
+      </a-entity>
+
+      <a-entity
+        sound="src: #bin-sound; volume: 1.4 positional: false"
+        id="garbage-throw-sound"
+      ></a-entity>
+
+      <a-box
+        class="ground"
+        position="0 -1 0"
+        scale="50 50 1"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ground093C_1K-JPG/Ground093C_1K-JPG_Color.jpg"
+        repeat="50 50"
+        static-body
+      >
+      </a-box>
+
+      <a-plane
+        id="ocean"
+        position="0 -1 0"
+        width="100"
+        height="100"
+        rotation="-90 0 0"
+        src="../assets/textures/Ground/Ice003_1K-JPG/Ice003_1K-JPG_Color.jpg"
+        repeat="100 100"
+        static-body
+      >
       </a-plane>
 
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="-120 -5 -100" 
+        scale="15 25 15" 
+        rotation="0 45 0">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="150 -5 50" 
+        scale="20 35 20" 
+        rotation="0 -30 0">
+      </a-entity>
+
+      <a-entity 
+        gltf-model="#decorBuilding" 
+        position="0 -5 180" 
+        scale="17.5 30 17.5" 
+        rotation="0 90 0">
+      </a-entity>
+
+      <a-entity
+        random-spawner="model: #decorWasher; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #decorPipes; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: 0"
+      ></a-entity>
+      <a-entity
+        random-spawner="model: #decorFence; count: 7; scale: 0.8 0.8 0.8; areaSize: 45; yPos: -0.5"
+      ></a-entity>
+
+      <script>
+        const sandWidth = 55;
+        const sandHeight = 55;
+        const sandOffsetZ = 0;
+
+        const createMetalTrash = (
+          modelId,
+          count,
+          scale,
+          yPos,
+          rotationType
+        ) => {
+          for (let i = 0; i < count; i++) {
+            const trash = document.createElement("a-entity");
+            trash.setAttribute("gltf-model", modelId);
+
+            const x = Math.random() * sandWidth - sandWidth / 2;
+            const z = Math.random() * sandHeight - sandHeight / 2 + sandOffsetZ;
+            trash.setAttribute("position", `${x} ${yPos} ${z}`);
+            trash.setAttribute("scale", scale);
+
+            if (rotationType === "random") {
+              trash.setAttribute("rotation", `0 ${Math.random() * 360} 0`);
+            } else if (rotationType === "lying") {
+              trash.setAttribute("rotation", `90 0 ${Math.random() * 360}`);
+            }
+
+            trash.setAttribute("class", "grabbable");
+            trash.setAttribute("dynamic-body", "mass: 0.5; shape: auto");
+
+            document.querySelector("a-scene").appendChild(trash);
+          }
+        };
+
+        createMetalTrash("#metalItem1", 40, "0.09 0.2 0.09", -0.4, "lying");
+        createMetalTrash("#metalItem2", 30, "0.015 0.05 0.015", -0.4, "lying");
+      </script>
     </a-scene>
   </body>
 </html>
