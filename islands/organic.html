@@ -133,15 +133,14 @@
       <a-entity position="0 0 -4" id="bin">
         <a-entity gltf-model="#binModel"></a-entity>
 
-        <a-cylinder
+        <a-box
           visible="false"
-          position="0 0.5 0"
-          radius="0.4"
-          height="0.8"
-          static-body="shape: cylinder"
+          position="0 0 0"
+          scale="1 1 2"
+          static-body="shape: box"
           delete-on-contact
         >
-        </a-cylinder>
+        </a-box>
       </a-entity>
 
       <a-entity

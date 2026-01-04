@@ -8,17 +8,20 @@ AFRAME.registerComponent("info-sign-logic", {
 
     this.el.addEventListener("click", () => {
       if (this.state === 0) {
-        textEl.setAttribute("value", "Collect the 5 objects of different materials and place them in the correct bin. Are you capable?");
+        textEl.setAttribute(
+          "value",
+          "Collect the 5 objects of different materials and place them in the correct bin. Are you capable?"
+        );
         this.state = 1;
       }
     });
-  }
+  },
 });
 
 // 2. Lógica de Validação do Lixo (Bin correto?)
 AFRAME.registerComponent("final-bin-check", {
   schema: {
-    targetType: { type: "string", default: "" }
+    targetType: { type: "string", default: "" },
   },
   init: function () {
     this.el.addEventListener("collide", (e) => {
@@ -33,7 +36,6 @@ AFRAME.registerComponent("final-bin-check", {
 
         // Verifica se o tipo bate certo (Ex: metal == metal)
         if (itemType === this.data.targetType) {
-          
           // Mark as removing to prevent double-collision crashes
           hitEl.isRemoving = true;
 
@@ -41,7 +43,6 @@ AFRAME.registerComponent("final-bin-check", {
 
           setTimeout(() => {
             if (hitEl.parentNode) {
-              
               // CRITICAL FIX: Remove physics components BEFORE removing the entity
               // This prevents the physics engine from crashing on a missing shape
               hitEl.removeAttribute("dynamic-body");
@@ -50,9 +51,11 @@ AFRAME.registerComponent("final-bin-check", {
 
               // Remove o objeto do DOM
               hitEl.parentNode.removeChild(hitEl);
-              
+
               // Toca o som de sucesso
-              const soundEntity = document.querySelector("#garbage-throw-sound");
+              const soundEntity = document.querySelector(
+                "#garbage-throw-sound"
+              );
               if (soundEntity && soundEntity.components.sound) {
                 soundEntity.components.sound.playSound();
               }
@@ -62,11 +65,16 @@ AFRAME.registerComponent("final-bin-check", {
             }
           }, 50); // Increased delay slightly to 50ms to ensure physics step clears
         } else {
-          console.log("Wrong bin! Item is " + itemType + ", Bin needs " + this.data.targetType);
+          console.log(
+            "Wrong bin! Item is " +
+              itemType +
+              ", Bin needs " +
+              this.data.targetType
+          );
         }
       }
     });
-  }
+  },
 });
 
 // 3. Gerenciador do Jogo (Contador e Vitória)
@@ -79,10 +87,13 @@ AFRAME.registerComponent("final-island-manager", {
     // Escuta o evento de sucesso vindo dos bins
     this.el.addEventListener("garbage-success", () => {
       this.currentCount++;
-      
+
       // Atualiza o texto do contador no placar
       if (this.counterText) {
-        this.counterText.setAttribute("value", `Items collected: ${this.currentCount}/${this.totalGoal}`);
+        this.counterText.setAttribute(
+          "value",
+          `Items collected: ${this.currentCount}/${this.totalGoal}`
+        );
       }
 
       // Verifica Vitória
@@ -96,15 +107,23 @@ AFRAME.registerComponent("final-island-manager", {
     // Muda o céu
     const sky = document.querySelector("#main-sky");
     if (sky) {
-      sky.setAttribute("src", ""); 
+      sky.setAttribute("src", "");
       sky.setAttribute("color", "#87CEEB"); // Azul limpo
     }
 
     // Atualiza o Placar com mensagem final
     const textEl = document.querySelector("#placard-text");
     if (textEl) {
-      textEl.setAttribute("value", "CONGRATULATIONS!\nThe island is clean.\nRecycling is the future.");
+      textEl.setAttribute(
+        "value",
+        "CONGRATULATIONS!\nThe island is clean.\nRecycling is the future."
+      );
       textEl.setAttribute("color", "#00FF00");
     }
-  }
+
+    // Redireciona após 10 segundos
+    setTimeout(() => {
+      window.location.href = "../index.html";
+    }, 10000);
+  },
 });
