@@ -22,21 +22,36 @@ AFRAME.registerComponent("final-bin-check", {
   },
   init: function () {
     this.el.addEventListener("collide", (e) => {
-      console.log("Collision detected with:", e.detail.body.el);
       const hitEl = e.detail.body ? e.detail.body.el : null;
 
+      // Safety check: ensure hitEl exists and hasn't been processed yet
+      if (!hitEl || hitEl.isRemoving) return;
+
       // Verifica se é um objeto agarrável
-      if (hitEl && hitEl.classList.contains("grabbable")) {
+      if (hitEl.classList.contains("grabbable")) {
         const itemType = hitEl.getAttribute("data-type");
 
         // Verifica se o tipo bate certo (Ex: metal == metal)
         if (itemType === this.data.targetType) {
+          
+          // Mark as removing to prevent double-collision crashes
+          hitEl.isRemoving = true;
+
+          console.log("Correct bin! Removing:", itemType);
+
           setTimeout(() => {
             if (hitEl.parentNode) {
-              // Remove o objeto
+              
+              // CRITICAL FIX: Remove physics components BEFORE removing the entity
+              // This prevents the physics engine from crashing on a missing shape
+              hitEl.removeAttribute("dynamic-body");
+              hitEl.removeAttribute("static-body");
+              hitEl.removeAttribute("shape"); // specific to cannon.js sometimes
+
+              // Remove o objeto do DOM
               hitEl.parentNode.removeChild(hitEl);
               
-              // Toca o som de sucesso (se houver a entidade de som definida no HTML)
+              // Toca o som de sucesso
               const soundEntity = document.querySelector("#garbage-throw-sound");
               if (soundEntity && soundEntity.components.sound) {
                 soundEntity.components.sound.playSound();
@@ -45,7 +60,7 @@ AFRAME.registerComponent("final-bin-check", {
               // Avisa o manager para subir a pontuação
               this.el.sceneEl.emit("garbage-success");
             }
-          }, 0);
+          }, 50); // Increased delay slightly to 50ms to ensure physics step clears
         } else {
           console.log("Wrong bin! Item is " + itemType + ", Bin needs " + this.data.targetType);
         }
