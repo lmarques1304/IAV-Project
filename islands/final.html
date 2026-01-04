@@ -17,7 +17,7 @@
 
   <body>
     <a-scene
-      physics="gravity: -9.8; debug: true"
+      physics="gravity: -9.8; debug: false"
       final-island-manager
       island-setup
     >
@@ -52,7 +52,7 @@
         ></a-asset-item>
         <a-asset-item
           id="plasticBag"
-          src="../assets/Final/plastic_bag_rigged.glb"
+          src="../assets/Final/trash_bag.glb"
         ></a-asset-item>
         <a-asset-item
           id="glassCup"
@@ -236,8 +236,8 @@
 
       <a-entity
         gltf-model="#plasticBag"
-        position="19 -100 15"
-        scale="6 6 6"
+        position="19 -104 15"
+        scale="0.1 0.1 0.1"
         class="grabbable"
         data-type="plastic"
         dynamic-body="mass: 5; shape: box; halfExtents: 0.15 0.25 0.15"
