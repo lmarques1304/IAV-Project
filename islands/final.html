@@ -18,7 +18,7 @@
 
   <body>
     <a-scene
-      physics="gravity: -9.8; debug: false"
+      physics="gravity: -9.8; debug: true"
       final-island-manager
       island-setup
     >
@@ -132,7 +132,7 @@
         gltf-model="#plasticBinModel"
         position="-10 -107 -55"
         scale="10 10 10"
-        static-body="shape: hull"> 
+      >
       </a-entity>
 
       <a-box
@@ -141,25 +141,26 @@
         scale="7 10 7"
         static-body
         visible="false"
-        final-bin-check="targetType: plastic">
+        final-bin-check="targetType: plastic"
+      >
       </a-box>
-
 
       <a-entity
         id="bin-organic-visual"
         gltf-model="#organicBinModel"
-        position="25 -103 -60"
+        position="29 -103 -60"
         scale="5 5 5"
-        static-body="shape: hull">
+      >
       </a-entity>
 
       <a-box
         id="bin-organic-sensor"
-        position="25 -103 -60"
-        scale="4 3 10"
+        position="29 -104 -60"
+        scale="5 4 10"
         visible="false"
         static-body
-        final-bin-check="targetType: organic">
+        final-bin-check="targetType: organic"
+      >
       </a-box>
 
       <a-entity
@@ -219,6 +220,7 @@
         class="grabbable"
         data-type="metal"
         dynamic-body="mass: 5; shape: box"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
       </a-entity>
 
@@ -229,16 +231,18 @@
         class="grabbable"
         data-type="metal"
         dynamic-body="mass: 5; shape: box"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
       </a-entity>
 
       <a-entity
         gltf-model="#plasticBag"
-        position="18 -100 15"
+        position="19 -100 15"
         scale="3 3 3"
         class="grabbable"
         data-type="plastic"
         dynamic-body="mass: 5; shape: box"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
       </a-entity>
 
@@ -249,6 +253,7 @@
         class="grabbable"
         data-type="glass"
         dynamic-body="mass: 5; shape: box"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
       </a-entity>
 
@@ -259,6 +264,7 @@
         class="grabbable"
         data-type="organic"
         dynamic-body="mass: 5; shape: box"
+        stay-in-bounds="xRange: 55; zRange: 80"
       >
       </a-entity>
 
